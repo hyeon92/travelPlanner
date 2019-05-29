@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout, Menu, Icon } from 'antd';
-import 'antd/dist/antd.css';
 import 'page/side/MainSide.css';
 
 class MainSide extends Component {
@@ -15,8 +14,10 @@ class MainSide extends Component {
           left: 0
         }}
       >
-        <Icon className="trigger" type="aliwangwang" />
-        <span className="trigger">Name</span>
+        <div className="trigger">
+          <Icon type="smile" />
+          <span> NAME</span>
+        </div>
         <Menu defaultOpenKeys={['sub1']} mode="inline" theme="dark">
           <Menu.Item>
             <Link to="/">
