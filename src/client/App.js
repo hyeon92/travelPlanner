@@ -5,12 +5,13 @@ import { Route } from 'react-router-dom';
 import TravelSide from 'page/side/TravelSide';
 // import Main from 'page/Main';
 // import TravelListContainer from 'container/TravelListContainer';
-import SignUp from 'page/SignUp';
+// import SignUp from 'page/SignUp';
 // import TravelDetail from 'page/TravelDetail';
 // import Travel from 'page/Travel';
 
 import BasicSide from 'page/side/BasicSide';
 import LoginContainer from 'container/LoginContainer';
+import SignUpContainer from 'container/SignUpContainer';
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
         }}
       >
         <Route exact path={'/'} component={LoginContainer} />
-        <Route exact path={'/SignUp'} component={SignUp} />
+        <Route exact path={'/SignUp'} component={SignUpContainer} />
         {/* <Route exact path={'/:list'} component={TravelListContainer} />
         <Route exact path={'/:list/:id'} component={Travel} />
         <Route exact path={'/:list/:id/Detail'} component={TravelDetail} /> */}

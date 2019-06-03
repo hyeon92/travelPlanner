@@ -2,27 +2,32 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as userActions from 'store/module/user';
-import Login from 'page/Login';
+import SignUp from 'page/SignUp';
 
-class LoginContainer extends Component {
+class SignUpContainer extends Component {
   // status값에 따라 반응
   componentDidUpdate() {
-    const { status, userActions } = this.props;
+    const { status } = this.props;
 
     if (status === 'success') {
-      this.props.history.push('/home');
+      this.props.history.push('/');
     } else if (status === 'error') {
-      alert('아이디 혹은 비밀번호가 맞지 않습니다.');
+      alert('다시 입력해주세요');
 
       // status 값 초기화
       userActions.basicStatus();
     }
   }
-
   // ID 변경
   handleEditID = e => {
     const { userActions } = this.props;
     userActions.editID(e.target.value);
+  };
+
+  //이름 변경
+  handleEditName = e => {
+    const { userActions } = this.props;
+    userActions.editName(e.target.value);
   };
 
   // PW 변경
@@ -31,22 +36,23 @@ class LoginContainer extends Component {
     userActions.editPW(e.target.value);
   };
 
-  // 로그인 버튼 클릭 이벤트
-  handleLogin = () => {
+  // 회원가입 버튼 클릭
+  handleSignUp = e => {
     const { userActions, user } = this.props;
-    userActions.singin(user);
+    userActions.signup(user);
   };
 
   render() {
     const { user } = this.props;
-    const { handleEditID, handleEditPW, handleLogin } = this;
+    const { handleEditID, handleEditName, handleEditPW, handleSignUp } = this;
 
     return (
-      <Login
+      <SignUp
         user={user}
         onEditID={handleEditID}
+        onEditName={handleEditName}
         onEditPW={handleEditPW}
-        onLogin={handleLogin}
+        onSignUp={handleSignUp}
       />
     );
   }
@@ -57,4 +63,4 @@ export default connect(
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch)
   })
-)(LoginContainer);
+)(SignUpContainer);

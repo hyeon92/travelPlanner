@@ -6,8 +6,7 @@ const Login = ({ user, onEditID, onEditPW, onLogin }) => {
   if (!user) {
     user = {
       id: null,
-      password: null,
-      status: false
+      password: null
     };
   }
   return (
