@@ -3,20 +3,20 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as userActions from 'store/module/user';
 import * as travelActions from 'store/module/travel';
-import TravelList from 'page/TravelList';
+import Travel from 'page/Travel';
 
-class TravelListContainer extends Component {
+class TravelContainer extends Component {
   componentDidMount() {
     const { user, travelActions } = this.props;
 
     console.log('componentDidMount', user);
 
     // travelActions.getTravelList(user.id);
-    travelActions.getTravelList('123');
+    // travelActions.getTravelList('123');
   }
   render() {
     const { user } = this.props;
-    return <TravelList />;
+    return <Travel />;
   }
 }
 
@@ -26,4 +26,4 @@ export default connect(
     travelActions: bindActionCreators(travelActions, dispatch),
     userActions: bindActionCreators(userActions, dispatch)
   })
-)(TravelListContainer);
+)(TravelContainer);

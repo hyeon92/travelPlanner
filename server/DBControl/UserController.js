@@ -1,6 +1,21 @@
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var app = express();
 app.use(express.json());
+
+app.use(cookieParser());
+app.use(
+  session({
+    key: 'sid',
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 24000 * 60 * 60 // 쿠키 유효기간 24시간
+    }
+  })
+);
 
 var User = require('./User');
 
@@ -12,6 +27,11 @@ app.get('/select', function(req, res) {
   ) {
     if (err) return res.status(500).send('User 조회 실패');
     if (!user) return res.status(404).send('User 없음.');
+
+    req.session.user = user;
+
+    console.log(req.session.user);
+
     res.status(200).send(user);
   });
 });

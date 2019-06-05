@@ -18,6 +18,7 @@ const initialState = {
     }
   ]
 };
+
 class TravelDetail extends Component {
   componentDidMount() {
     let el = document.getElementById('map');

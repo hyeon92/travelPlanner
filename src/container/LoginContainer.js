@@ -10,7 +10,7 @@ class LoginContainer extends Component {
     const { status, userActions } = this.props;
 
     if (status === 'success') {
-      this.props.history.push('/home');
+      this.props.history.push('/MyList');
     } else if (status === 'error') {
       alert('아이디 혹은 비밀번호가 맞지 않습니다.');
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Card } from 'antd';
+import { List, Card, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 
 const TravelList = () => {
@@ -27,12 +27,26 @@ const TravelList = () => {
       title: '여행제목 4',
       area: '일본',
       schudule: '07.07 ~ 07.20'
+    },
+    {
+      id: 5,
+      title: '여행제목 5',
+      area: '태국',
+      schudule: '07.27 ~ 07.30'
     }
   ];
   return (
     <List
       grid={{ gutter: 16, column: 4 }}
       dataSource={data}
+      footer={
+        <Link to="/MyList/Add">
+          <Card>
+            <Icon type="plus" />
+            <span> ADD </span>
+          </Card>
+        </Link>
+      }
       renderItem={item => (
         <List.Item>
           <Link to="/MyList/1">

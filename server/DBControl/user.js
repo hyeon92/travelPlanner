@@ -9,15 +9,18 @@ var UserSchema = new mongoose.Schema({
     sDate: Date,
     eDate: Date,
     title: String,
-    area: {
-      seq: Number,
-      Key: String,
-      locationX: Number,
-      locationY: Number,
-      areaName: String,
-      memo: String,
-      money: Number,
-      time: String
+    day: {
+      date: Date,
+      area: {
+        seq: Number,
+        Key: String,
+        locationX: Number,
+        locationY: Number,
+        areaName: String,
+        memo: String,
+        money: Number,
+        time: String
+      }
     }
   }
 });

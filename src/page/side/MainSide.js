@@ -14,17 +14,7 @@ class MainSide extends Component {
           left: 0
         }}
       >
-        <div className="trigger">
-          <Icon type="smile" />
-          <span> NAME</span>
-        </div>
         <Menu defaultOpenKeys={['sub1']} mode="inline" theme="dark">
-          <Menu.Item>
-            <Link to="/">
-              <Icon type="home" />
-              <span>메인화면</span>
-            </Link>
-          </Menu.Item>
           <Menu.ItemGroup key="g1" title="여행일정">
             <Menu.Item key="1">
               <Link to="/MyList">

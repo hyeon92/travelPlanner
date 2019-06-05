@@ -54,8 +54,6 @@ export const singin = user => dispatch => {
 export const signup = user => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
-  console.log(user);
-
   return axios
     .post('http://localhost:4000/users/insert', {
       params: {
