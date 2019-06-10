@@ -7,23 +7,21 @@ import TravelList from 'page/TravelList';
 
 class TravelListContainer extends Component {
   componentDidMount() {
-    const { user, travelActions } = this.props;
-
-    console.log('componentDidMount', user);
-
-    // travelActions.getTravelList(user.id);
-    travelActions.getTravelList('123');
+    // const { travelActions } = this.props;
+    // // travelActions.getTravelList(user.id);
+    // travelActions.getTravelList('123');
   }
   render() {
-    const { user } = this.props;
+    // const { travelList } = this.props;
+    // return <TravelList travelList={travelList} />;
     return <TravelList />;
   }
 }
 
 export default connect(
-  state => ({ user: state.user.user }),
+  state => ({}),
   dispatch => ({
-    travelActions: bindActionCreators(travelActions, dispatch),
-    userActions: bindActionCreators(userActions, dispatch)
+    // travelActions: bindActionCreators(travelActions, dispatch),
+    // userActions: bindActionCreators(userActions, dispatch)
   })
 )(TravelListContainer);

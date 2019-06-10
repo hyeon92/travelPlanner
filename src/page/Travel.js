@@ -1,7 +1,7 @@
 /* global daum */
 
 import React, { Component, Fragment } from 'react';
-import { List, Card, Avatar } from 'antd';
+import { List, Avatar } from 'antd';
 import { Link } from 'react-router-dom';
 
 const initialState = {
@@ -35,10 +35,14 @@ const initialState = {
 
 class Travel extends Component {
   componentDidMount() {
-    let el = document.getElementById('map');
-    let map = new daum.maps.Map(el, {
-      center: new daum.maps.LatLng(33.450701, 126.570667)
-    });
+    const mapContainer = document.getElementById('map'), // 지도를 표시할 div
+      mapOption = {
+        center: new daum.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+      };
+
+    // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+    const map = new daum.maps.Map(mapContainer, mapOption);
   }
 
   render() {
@@ -47,7 +51,7 @@ class Travel extends Component {
         <div
           className="App"
           id="map"
-          style={{ width: '1000px;', height: '500px' }}
+          style={{ width: '1000px', height: '500px' }}
         />
         <List
           dataSource={initialState.list}

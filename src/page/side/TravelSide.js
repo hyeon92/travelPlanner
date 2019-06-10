@@ -1,44 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Layout, Menu, Icon, List, Avatar, DatePicker, Input } from 'antd';
+import { Layout, Icon, List, Avatar, DatePicker, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 import moment from 'moment';
-// import 'page/side/MainSide.css';
-
-const list = [
-  {
-    id: 1,
-    area: '1일차 첫번째 장소',
-    memo: '이것 꼭 먹기',
-    money: 10000
-  },
-  {
-    id: 2,
-    area: '1일차 두번째 장소',
-    memo: '저것 꼭 먹기',
-    money: 10000
-  },
-  {
-    id: 3,
-    area: '1일차 세번째 장소',
-    memo: '요것 꼭 먹기',
-    money: 10000
-  },
-  {
-    id: 4,
-    area: '1일차 네번째 장소',
-    memo: '그것 꼭 먹기',
-    money: 10000
-  }
-];
 
 const TravelSide = ({
   travelList,
   onEditTitle,
   onEditsDate,
-  onEditeDate,
-  onDisabledsDate,
-  onDisabledeDate
+  onAddSchedule,
+  onDelSchedule,
+  onSaveTravel
 }) => {
   if (!travelList) {
     travelList = {
@@ -47,7 +19,7 @@ const TravelSide = ({
       sDate: null,
       eDate: null,
       title: null,
-      day: null
+      day: []
     };
   }
 
@@ -64,7 +36,7 @@ const TravelSide = ({
         value={travelList.title}
         placeholder="여행제목"
         onChange={onEditTitle}
-        value={travelList.title}
+        onBlur={() => console.log('HH')}
       />
       <div className="trigger">
         <div>여행 시작일</div>
@@ -74,41 +46,45 @@ const TravelSide = ({
           allowClear={false}
           value={moment(travelList.sDate)}
           onChange={onEditsDate}
-          disabledDate={onDisabledsDate}
         />
         <div>여행 마지막일</div>
         <DatePicker
+          disabled
           placeholder="End"
           format="YYYY-MM-DD"
           allowClear={false}
           value={moment(travelList.eDate)}
-          onChange={onEditeDate}
-          disabledDate={onDisabledeDate}
         />
       </div>
-      {/* 
-      <Menu defaultOpenKeys={['sub1']} mode="inline">
+      <div style={{ backgroundColor: '#ffffff' }}>
         <List
-          dataSource={list}
+          dataSource={travelList.day}
           footer={
-            <Link to="/MyList/ADD">
+            <div onClick={onAddSchedule}>
               <Icon type="plus" />
               <span> ADD </span>
-            </Link>
+            </div>
           }
           renderItem={item => (
-            <List.Item>
-              <Link to={`/MyList/${item.id}/Detail`}>
+            <List.Item
+              extra={[
+                <Icon type="delete" onClick={() => onDelSchedule(item.id)} />
+              ]}
+            >
+              <Link to={`/MyList/${item.id}`}>
                 <List.Item.Meta
                   avatar={<Avatar icon="pushpin" />}
-                  title={item.area}
-                  description={item.memo}
+                  title={item.title}
+                  description={moment(item.date).format('YYYY-MM-DD')}
                 />
               </Link>
             </List.Item>
           )}
         />
-      </Menu> */}
+      </div>
+      <Button block onClick={onSaveTravel}>
+        저장
+      </Button>
     </Layout.Sider>
   );
 };

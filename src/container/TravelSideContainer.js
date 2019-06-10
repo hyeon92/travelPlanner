@@ -1,17 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import moment from 'moment';
 import * as userActions from 'store/module/user';
 import * as travelActions from 'store/module/travel';
 import TravelSide from 'page/side/TravelSide';
 
 class TravelSideContainer extends Component {
-  componentDidMount() {
-    const { user, travel, travelActions } = this.props;
+  // status값에 따라 반응
+  componentDidUpdate() {
+    const { status, eventNm } = this.props;
+    const { travelActions } = this.props;
 
-    // travelActions.getTravelList(user.id);
-    // travelActions.getTravelList('123');
+    if (status === 'success' && eventNm === 'saveTravelList') {
+      alert('저장이 완료되었습니다.');
+      travelActions.getTravelList('123', 1);
+    } else if (status === 'error' && eventNm === 'saveTravelList') {
+      alert('저장 중 오류가 생겼습니다. 다시 시도해주십시오');
+    }
+  }
+  componentDidMount() {
+    const { travelActions } = this.props;
+
+    // travelActions.getTravelList(user.id, 1);
+    travelActions.getTravelList('123', 1);
   }
 
   // 여행 제목 변경
@@ -28,39 +39,36 @@ class TravelSideContainer extends Component {
     travelActions.editsDate(value);
   };
 
-  // 여행 마지막일자 변경
-  handleEditeDate = (e, value) => {
+  // 여행 일정 추가
+  handleAddSchedule = e => {
     const { travelActions } = this.props;
 
-    travelActions.editeDate(value);
+    travelActions.addSchedule();
   };
 
-  // 여행 시작일자 선택 캘린더에서 선택할 수 있는 날짜 구분
-  handleDisabledsDate = current => {
-    const { travelList } = this.props;
+  // 여행 일정 삭제
+  handleDelSchedule = key => {
+    const { travelActions } = this.props;
 
-    const endValue = moment(travelList.eDate);
-
-    return current && current > endValue;
+    travelActions.delSchedule(key);
   };
 
-  // 여행 마지막일자 선택 캘린더에서 선택할 수 있는 날짜 구분
-  handleDisabledeDate = current => {
+  // 여행계획 저장
+  handleSaveTravel = e => {
+    const { travelActions } = this.props;
     const { travelList } = this.props;
 
-    const startValue = moment(travelList.sDate);
-
-    return current && current < startValue;
+    travelActions.saveTravelList(travelList);
   };
 
   render() {
-    const { user, travelList } = this.props;
+    const { travelList } = this.props;
     const {
       handleEditTitle,
       handleEditsDate,
-      handleEditeDate,
-      handleDisabledsDate,
-      handleDisabledeDate
+      handleAddSchedule,
+      handleDelSchedule,
+      handleSaveTravel
     } = this;
 
     return (
@@ -68,16 +76,21 @@ class TravelSideContainer extends Component {
         travelList={travelList}
         onEditTitle={handleEditTitle}
         onEditsDate={handleEditsDate}
-        onEditeDate={handleEditeDate}
-        onDisabledsDate={handleDisabledsDate}
-        onDisabledeDate={handleDisabledeDate}
+        onAddSchedule={handleAddSchedule}
+        onDelSchedule={handleDelSchedule}
+        onSaveTravel={handleSaveTravel}
       />
     );
   }
 }
 
 export default connect(
-  state => ({ user: state.user.user, travelList: state.travel.travel }),
+  state => ({
+    user: state.user.user,
+    travelList: state.travel.travel,
+    status: state.travel.status,
+    eventNm: state.travel.eventNm
+  }),
   dispatch => ({
     travelActions: bindActionCreators(travelActions, dispatch),
     userActions: bindActionCreators(userActions, dispatch)

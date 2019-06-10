@@ -30,8 +30,6 @@ app.get('/select', function(req, res) {
 
     req.session.user = user;
 
-    console.log(req.session.user);
-
     res.status(200).send(user);
   });
 });

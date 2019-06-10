@@ -3,26 +3,34 @@ var UserSchema = new mongoose.Schema({
   id: String,
   password: String,
   name: String,
-  travel: {
-    key: String,
-    id: String,
-    sDate: Date,
-    eDate: Date,
-    title: String,
-    day: {
-      date: Date,
-      area: {
-        seq: Number,
-        Key: String,
-        locationX: Number,
-        locationY: Number,
-        areaName: String,
-        memo: String,
-        money: Number,
-        time: String
-      }
+  travel: [
+    {
+      key: Number,
+      id: String,
+      sDate: Date,
+      eDate: Date,
+      title: String,
+      day: [
+        {
+          id: Number,
+          date: Date,
+          title: String,
+          area: [
+            {
+              seq: Number,
+              Key: String,
+              locationX: Number,
+              locationY: Number,
+              areaName: String,
+              memo: String,
+              money: Number,
+              time: String
+            }
+          ]
+        }
+      ]
     }
-  }
+  ]
 });
 mongoose.model('User', UserSchema);
 module.exports = mongoose.model('User');

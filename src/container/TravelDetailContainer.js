@@ -7,15 +7,12 @@ import TravelDetail from 'page/TravelDetail';
 
 class TravelDetailContainer extends Component {
   componentDidMount() {
-    const { user, travelActions } = this.props;
-
-    console.log('componentDidMount', user);
-
+    // const { user, travelActions } = this.props;
     // travelActions.getTravelList(user.id);
     // travelActions.getTravelList('123');
   }
   render() {
-    const { user } = this.props;
+    // const { user } = this.props;
     return <TravelDetail />;
   }
 }

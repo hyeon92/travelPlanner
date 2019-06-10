@@ -2,7 +2,7 @@ import React from 'react';
 import { List, Card, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 
-const TravelList = () => {
+const TravelList = TravelList => {
   const data = [
     {
       id: 1,

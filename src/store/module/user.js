@@ -63,14 +63,12 @@ export const signup = user => dispatch => {
       }
     })
     .then(respone => {
-      console.log('respone', respone);
       dispatch({
         type: GET_POST_SUCCESS,
         payload: respone
       });
     })
     .catch(error => {
-      console.log('error', error);
       dispatch({
         type: GET_POST_FAILURE,
         payload: error
