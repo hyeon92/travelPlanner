@@ -1,7 +1,7 @@
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var app = express();
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-var User = require('./User');
+User = require('./User');
 
 // 로그인 처리
 app.get('/select', function(req, res) {

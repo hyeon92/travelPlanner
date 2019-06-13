@@ -1,7 +1,7 @@
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var app = express();
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
@@ -16,7 +16,7 @@ app.use(
     }
   })
 );
-var User = require('./User');
+const User = require('./User');
 
 // 특정 여행일자의 모든 지역 조회
 app.get('/select/:user_id/:travel_key/:day_id', function(req, res) {

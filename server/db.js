@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var databaseUrl = 'mongodb://localhost:27017/travelPlanner';
+const databaseUrl = 'mongodb://localhost:27017/travelPlanner';
 
 mongoose.connect(databaseUrl, { useNewUrlParser: true }, function(err, db) {
   if (err) {

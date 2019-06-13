@@ -1,7 +1,7 @@
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var app = express();
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
@@ -16,7 +16,7 @@ app.use(
     }
   })
 );
-var User = require('./User');
+const User = require('./User');
 
 // 특정회원 여행계획 조회
 app.get('/select/:id', function(req, res) {

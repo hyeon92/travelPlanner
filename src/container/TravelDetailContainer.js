@@ -15,9 +15,11 @@ class TravelDetailContainer extends Component {
       map: null,
       ps: new daum.maps.services.Places(),
       infowindow: new daum.maps.InfoWindow({ zIndex: 1 }),
-      markers: []
+      markers: [],
+      selectedMarker: null
     };
   }
+
   componentDidMount() {
     const { travelActions } = this.props;
 
@@ -35,35 +37,35 @@ class TravelDetailContainer extends Component {
     });
   }
 
-  // 여행 제목 변경
+  // 여행 제목을 수정할 때 호출되는 함수입니다.
   handleEditTitle = e => {
     const { travelActions } = this.props;
 
     travelActions.editTitle(e.target.value);
   };
 
-  // 여행 시작일자 변경
+  // 여행 시작일자를 수정할 때 호출되는 함수입니다.
   handleEditsDate = (e, value) => {
     const { travelActions } = this.props;
 
     travelActions.editsDate(value);
   };
 
-  // 여행 일정 추가
+  // 여행 일정(DAY)을 추가할때 호출되는 함수입니다.
   handleAddSchedule = e => {
     const { travelActions } = this.props;
 
     travelActions.addSchedule();
   };
 
-  // 여행 일정 삭제
+  // 여행 일정(DAY)을 삭제할 때 호출되는 함수입니다.
   handleDelSchedule = key => {
     const { travelActions } = this.props;
 
     travelActions.delSchedule(key);
   };
 
-  // 여행계획 저장
+  // 여행계획(TRAVEL)을 저장할 때 호출되는 함수입니다.
   handleSaveTravel = e => {
     const { travelActions } = this.props;
     const { travelList } = this.props;
@@ -71,8 +73,8 @@ class TravelDetailContainer extends Component {
     travelActions.saveTravelList(travelList);
   };
 
-  // 지도 키워드 검색 요청
-  handelSearchPlaces = () => {
+  // 지도 키워드 검색 요청할 때 호출되는 함수입니다.
+  handleSearchPlaces = () => {
     const { displayPlaces, displayPagination } = this;
     let keyword = document.getElementById('keyword').value;
 
@@ -102,56 +104,118 @@ class TravelDetailContainer extends Component {
   // 검색 결과 목록과 마커를 표출하는 함수입니다
   displayPlaces = places => {
     const {
-      removeAllChildNods,
-      removeMarker,
       addMarker,
       getListItem,
-      displayInfowindow
+      displayInfowindow,
+      createMarkerImage
     } = this;
+    const { areaActions } = this.props;
 
     let listEl = document.getElementById('placesList'),
       menuEl = document.getElementById('menu_wrap'),
       fragment = document.createDocumentFragment(),
-      bounds = new daum.maps.LatLngBounds(),
-      listStr = '';
+      bounds = new daum.maps.LatLngBounds();
 
     // 검색 결과 목록에 추가된 항목들을 제거합니다
-    removeAllChildNods(listEl);
+    while (listEl.hasChildNodes()) {
+      listEl.removeChild(listEl.lastChild);
+    }
 
     // 지도에 표시되고 있는 마커를 제거합니다
-    removeMarker();
+    for (let i = 0; i < this.state.markers.length; i++) {
+      this.state.markers[i].setMap(null);
+    }
+    this.setState({ markers: [] });
 
     for (let i = 0; i < places.length; i++) {
+      // 기본 마커 이미지, 클릭 마커 이미지를 생성합니다.
+      const normalImage = createMarkerImage('normal', i),
+        clickImage = createMarkerImage('click');
+
       // 마커를 생성하고 지도에 표시합니다
       let placePosition = new daum.maps.LatLng(places[i].y, places[i].x),
         marker = addMarker(placePosition, i),
         itemEl = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성합니다
 
-      // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-      // LatLngBounds 객체에 좌표를 추가합니다
+      // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해 LatLngBounds 객체에 좌표를 추가합니다
       bounds.extend(placePosition);
 
-      // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
-      // 이벤트 리스너로는 클로저를 만들어 등록합니다
-      // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+      // 마커에 mouseover 이벤트와 mouseout 이벤트, click 이벤트를 등록합니다
       daum.maps.event.addListener(marker, 'mouseover', () => {
         displayInfowindow(marker, places[i].place_name);
       });
       daum.maps.event.addListener(marker, 'mouseout', () => {
         this.state.infowindow.close();
       });
+      daum.maps.event.addListener(marker, 'click', () => {
+        // 클릭된 마커가 없고, click 마커가 클릭된 마커가 아니면 마커의 이미지를 클릭 이미지로 변경합니다
+        if (
+          !this.state.selectedMarker ||
+          this.state.selectedMarker !== marker
+        ) {
+          // 클릭된 마커 객체가 null이 아니면 클릭된 마커의 이미지를 기본 이미지로 변경하고
+          !!this.state.selectedMarker &&
+            this.state.selectedMarker.setImage(normalImage, i);
 
-      itemEl.onmouseover = function() {
+          // 현재 클릭된 마커의 이미지는 클릭 이미지로 변경합니다
+          marker.setImage(clickImage);
+        }
+
+        // 지도 중심을 부드럽게 이동시킵니다
+        // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+        this.state.map.setLevel(3);
+        this.state.map.panTo(marker.getPosition());
+
+        // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
+        this.setState({
+          selectedMarker: marker
+        });
+
+        areaActions.editPlaceInfo(places[i]);
+      });
+
+      // 마커와 검색결과 항목에 mouseover 했을때 해당 장소에 인포윈도우에 장소명을 표시합니다
+      itemEl.onmouseover = () => {
+        // 지도 중심을 부드럽게 이동시킵니다
+        // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+        this.state.map.setLevel(5);
+        this.state.map.panTo(marker.getPosition());
+
         displayInfowindow(marker, places[i].place_name);
       };
 
+      // mouseout 했을 때는 인포윈도우를 닫습니다
       itemEl.onmouseout = () => {
         this.state.infowindow.close();
       };
 
-      // 마커와 검색결과 항목에 mouseover 했을때
-      // 해당 장소에 인포윈도우에 장소명을 표시합니다
-      // mouseout 했을 때는 인포윈도우를 닫습니다
+      // click 했을 때 클릭 이벤트를 발생 시킵니다.
+      itemEl.onclick = () => {
+        // 클릭된 마커가 없고, click 마커가 클릭된 마커가 아니면 마커의 이미지를 클릭 이미지로 변경합니다
+        if (
+          !this.state.selectedMarker ||
+          this.state.selectedMarker !== marker
+        ) {
+          // 클릭된 마커 객체가 null이 아니면 클릭된 마커의 이미지를 기본 이미지로 변경하고
+          !!this.state.selectedMarker &&
+            this.state.selectedMarker.setImage(normalImage, i);
+
+          // 현재 클릭된 마커의 이미지는 클릭 이미지로 변경합니다
+          marker.setImage(clickImage);
+        }
+
+        // 지도 중심을 부드럽게 이동시킵니다
+        // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+        this.state.map.setLevel(3);
+        this.state.map.panTo(marker.getPosition());
+
+        // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
+        this.setState({
+          selectedMarker: marker
+        });
+
+        areaActions.editPlaceInfo(places[i]);
+      };
 
       fragment.appendChild(itemEl);
     }
@@ -164,23 +228,8 @@ class TravelDetailContainer extends Component {
     this.state.map.setBounds(bounds);
   };
 
-  // 검색결과 목록의 자식 Element를 제거하는 함수입니다
-  removeAllChildNods = el => {
-    while (el.hasChildNodes()) {
-      el.removeChild(el.lastChild);
-    }
-  };
-
-  // 지도 위에 표시되고 있는 마커를 모두 제거합니다
-  removeMarker = () => {
-    for (let i = 0; i < this.state.markers.length; i++) {
-      this.state.markers[i].setMap(null);
-    }
-    this.setState({ markers: [] });
-  };
-
   // 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
-  addMarker = (position, idx, title) => {
+  addMarker = (position, idx) => {
     const imageSrc =
         'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
       imageSize = new daum.maps.Size(36, 37), // 마커 이미지의 크기
@@ -233,7 +282,6 @@ class TravelDetailContainer extends Component {
     return el;
   };
 
-  // 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
   // 인포윈도우에 장소명을 표시합니다
   displayInfowindow = (marker, title) => {
     let content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
@@ -244,25 +292,24 @@ class TravelDetailContainer extends Component {
 
   // 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
   displayPagination = pagination => {
-    var paginationEl = document.getElementById('pagination'),
-      fragment = document.createDocumentFragment(),
-      i;
+    const paginationEl = document.getElementById('pagination'),
+      fragment = document.createDocumentFragment();
 
     // 기존에 추가된 페이지번호를 삭제합니다
     while (paginationEl.hasChildNodes()) {
       paginationEl.removeChild(paginationEl.lastChild);
     }
 
-    for (i = 1; i <= pagination.last; i++) {
-      var el = document.createElement('a');
+    for (let i = 1; i <= pagination.last; i++) {
+      const el = document.createElement('a');
       el.href = '#';
       el.innerHTML = i;
 
       if (i === pagination.current) {
         el.className = 'on';
       } else {
-        el.onclick = (function(i) {
-          return function() {
+        el.onclick = (i => {
+          return () => {
             pagination.gotoPage(i);
           };
         })(i);
@@ -273,15 +320,108 @@ class TravelDetailContainer extends Component {
     paginationEl.appendChild(fragment);
   };
 
+  // MakrerImage 객체를 생성하여 반환하는 함수입니다
+  createMarkerImage = (eventNm, idx) => {
+    if (eventNm === 'click') {
+      const imageSrc =
+          'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png', // 스프라이트 마커 이미지 URL
+        imageSize = new daum.maps.Size(24, 35);
+
+      const markerImage = new daum.maps.MarkerImage(imageSrc, imageSize);
+
+      return markerImage;
+    } else if (eventNm === 'normal') {
+      const imageSrc =
+          'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+        imageSize = new daum.maps.Size(36, 37), // 마커 이미지의 크기
+        imgOptions = {
+          spriteSize: new daum.maps.Size(36, 691), // 스프라이트 이미지의 크기
+          spriteOrigin: new daum.maps.Point(0, idx * 46 + 10), // 스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+          offset: new daum.maps.Point(13, 37) // 마커 좌표에 일치시킬 이미지 내에서의 좌표
+        },
+        markerImage = new daum.maps.MarkerImage(
+          imageSrc,
+          imageSize,
+          imgOptions
+        );
+
+      return markerImage;
+    }
+  };
+
+  // 키워드 검색 창에 엔터 키 클릭했을 때 호출되는 함수입니다.,
+  handlePressEnter = e => {
+    const { handleSearchPlaces } = this;
+    if (e.key === 'Enter') {
+      handleSearchPlaces();
+    }
+  };
+
+  // 시간대 라디오 버튼을 클릭했을 때 호출되는 함수입니다.
+  handleEditTime = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editTime(e.target.value);
+  };
+
+  // 이동수단 라디오 버튼을 클릭했을 때 호출되는 함수입니다.
+  handleEditTransport = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editTransport(e.target.value);
+  };
+
+  // 이동시간을 수정했을 때 호출되는 함수입니다.
+  handleEditMoveTime = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editMoveTime(e);
+  };
+
+  // 교통비를 수정했을 때 호출되는 함수입니다.
+  handleEditTransportCost = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editTransportCost(e);
+  };
+
+  // 비용(입장료 등 기타비용)이 수정했을 때 호출되는 함수입니다.
+  handleEditCost = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editCost(e);
+  };
+
+  // 체류시간을 수정했을 때 호출되는 함수입니다.
+  handleEditStayTime = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editStayTime(e);
+  };
+
+  handleEditMemo = e => {
+    const { areaActions } = this.props;
+
+    areaActions.editMemo(e.target.value);
+  };
+
   render() {
-    const { travelList } = this.props;
+    const { travelList, area } = this.props;
     const {
       handleEditTitle,
       handleEditsDate,
       handleAddSchedule,
       handleDelSchedule,
       handleSaveTravel,
-      handelSearchPlaces
+      handleSearchPlaces,
+      handlePressEnter,
+      handleEditTime,
+      handleEditTransport,
+      handleEditMoveTime,
+      handleEditTransportCost,
+      handleEditCost,
+      handleEditStayTime,
+      handleEditMemo
     } = this;
     return (
       <Fragment>
@@ -314,12 +454,14 @@ class TravelDetailContainer extends Component {
             <div id="menu_wrap" className="bg_white">
               <div className="option">
                 <div>
-                  키워드 : <input type="text" id="keyword" size="15" />
-                  <button onClick={handelSearchPlaces}>검색하기</button>
-                  {/* <form onSubmit={handelSearchPlaces}>
-                    키워드 : <input type="text" id="keyword" size="15" />
-                    <button type="submit">검색하기</button>
-                  </form> */}
+                  키워드 :{' '}
+                  <input
+                    type="text"
+                    id="keyword"
+                    size="15"
+                    onKeyPress={handlePressEnter}
+                  />
+                  <button onClick={handleSearchPlaces}>검색하기</button>
                 </div>
               </div>
               <hr />
@@ -327,7 +469,16 @@ class TravelDetailContainer extends Component {
               <div id="pagination" />
             </div>
           </div>
-          <TravelDetail />
+          <TravelDetail
+            area={area}
+            onEditTime={handleEditTime}
+            onEditTransport={handleEditTransport}
+            onEditMoveTime={handleEditMoveTime}
+            onEditTransportCost={handleEditTransportCost}
+            onEditCost={handleEditCost}
+            onEditStayTime={handleEditStayTime}
+            onEditMemo={handleEditMemo}
+          />
         </div>
       </Fragment>
     );
@@ -340,7 +491,7 @@ export default connect(
     travelList: state.travel.travel,
     travelStatus: state.travel.status,
     travelEventNm: state.travel.eventNm,
-    areaList: state.area.area
+    area: state.area.area
   }),
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch),

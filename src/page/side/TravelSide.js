@@ -29,8 +29,7 @@ const TravelSide = ({
         overflow: 'auto',
         height: '100vh',
         position: 'fixed',
-        left: 0,
-        padding: '10px'
+        left: 0
       }}
     >
       <Input
@@ -59,8 +58,8 @@ const TravelSide = ({
       <div
         style={{
           backgroundColor: '#ffffff',
-          padding: '10px',
-          marginBottom: '10px'
+          padding: '5px',
+          margin: '10px'
         }}
       >
         <List
