@@ -82,7 +82,7 @@ app.post('/update/:id/:key', function(req, res) {
   );
 });
 
-// 여행일정 추가
+// 여행일정 추가 test
 app.post('/insert', function(req, res) {
   User.updateOne(
     { id: 123, travel: [{ title: '11' }] },

@@ -29,14 +29,14 @@ const TravelSide = ({
         overflow: 'auto',
         height: '100vh',
         position: 'fixed',
-        left: 0
+        left: 0,
+        padding: '10px'
       }}
     >
       <Input
         value={travelList.title}
         placeholder="여행제목"
         onChange={onEditTitle}
-        onBlur={() => console.log('HH')}
       />
       <div className="trigger">
         <div>여행 시작일</div>
@@ -56,7 +56,13 @@ const TravelSide = ({
           value={moment(travelList.eDate)}
         />
       </div>
-      <div style={{ backgroundColor: '#ffffff' }}>
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          padding: '10px',
+          marginBottom: '10px'
+        }}
+      >
         <List
           dataSource={travelList.day}
           footer={

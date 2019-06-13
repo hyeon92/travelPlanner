@@ -21,6 +21,7 @@ class TravelSideContainer extends Component {
   componentDidMount() {
     const { travelActions } = this.props;
 
+    // user_id, travel_id
     // travelActions.getTravelList(user.id, 1);
     travelActions.getTravelList('123', 1);
   }

@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as userActions from 'store/module/user';
-import * as travelActions from 'store/module/travel';
+// import { bindActionCreators } from 'redux';
+// import * as userActions from 'store/module/user';
+// import * as travelActions from 'store/module/travel';
 import TravelList from 'page/TravelList';
+import MainSide from 'page/side/MainSide';
 
 class TravelListContainer extends Component {
   componentDidMount() {
@@ -14,7 +15,21 @@ class TravelListContainer extends Component {
   render() {
     // const { travelList } = this.props;
     // return <TravelList travelList={travelList} />;
-    return <TravelList />;
+    return (
+      <Fragment>
+        <MainSide />
+        <div
+          style={{
+            marginLeft: 200,
+            padding: 24,
+            background: '#F7ECEB',
+            minHeight: 1000
+          }}
+        >
+          <TravelList />
+        </div>
+      </Fragment>
+    );
   }
 }
 

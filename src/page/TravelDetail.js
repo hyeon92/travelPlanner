@@ -1,76 +1,75 @@
-/* global daum */
-
 import React, { Component, Fragment } from 'react';
-import { List, Avatar, Icon, Input, Typography, Radio, Button } from 'antd';
+import {
+  Input,
+  Typography,
+  Radio,
+  Button,
+  TimePicker,
+  InputNumber
+} from 'antd';
+import moment from 'moment';
 import 'page/TravelDetail.css';
 
-const initialState = {
-  list: [
-    {
-      id: 1,
-      area: '지역1',
-      category: '지역 카테고리'
-    },
-    {
-      id: 2,
-      area: '지역2',
-      category: '지역 카테고리'
-    }
-  ]
-};
-
 class TravelDetail extends Component {
-  componentDidMount() {
-    let el = document.getElementById('map');
-    let map = new daum.maps.Map(el, {
-      center: new daum.maps.LatLng(33.450701, 126.570667)
-    });
-  }
-
   render() {
     return (
       <Fragment>
-        <div class="left">
-          <Input.Search
-            placeholder="input search text"
-            onSearch={value => console.log(value)}
+        <div>
+          <Typography.Title level={4}>목적지</Typography.Title>
+          <Input placeholder="목적지" disabled />
+
+          <Typography.Title level={4}>시간대</Typography.Title>
+          <Radio.Group defaultValue="morning" buttonStyle="solid">
+            <Radio.Button value="morning">Morning</Radio.Button>
+            <Radio.Button value="afternoon">Afternoon</Radio.Button>
+            <Radio.Button value="evening">Evening</Radio.Button>
+          </Radio.Group>
+
+          <Typography.Title level={4}>이동수단</Typography.Title>
+          <Radio.Group defaultValue="1" buttonStyle="solid">
+            <Radio.Button value="1">도보</Radio.Button>
+            <Radio.Button value="2">버스</Radio.Button>
+            <Radio.Button value="3">지하철</Radio.Button>
+            <Radio.Button value="4">택시</Radio.Button>
+            <Radio.Button value="5">자차</Radio.Button>
+          </Radio.Group>
+
+          <Typography.Title level={4}>이동시간</Typography.Title>
+          <TimePicker
+            defaultValue={moment('00:00', 'HH:mm')}
+            format={'HH:mm'}
+            allowClear={false}
           />
 
-          <List
-            itemLayout="horizontal"
-            dataSource={initialState.list}
-            rowKey="id"
-            renderItem={item => (
-              <List.Item actions={[<Button>선택</Button>]}>
-                <List.Item.Meta
-                  avatar={<Avatar icon="global" />}
-                  title={item.area}
-                  description={item.category}
-                />
-              </List.Item>
-            )}
+          <Typography.Title level={4}>교통비</Typography.Title>
+          <InputNumber
+            defaultValue={0}
+            formatter={value =>
+              `${value} `.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+            step={100}
           />
-        </div>
-        <div class="right">
-          <Typography.Title>1일차 첫번째 장소</Typography.Title>
-          <div
-            className="App"
-            id="map"
-            style={{ width: '1000px;', height: '500px' }}
+
+          <Typography.Title level={4}>
+            비용(입장료 등 기타비용)
+          </Typography.Title>
+          <InputNumber
+            defaultValue={0}
+            formatter={value =>
+              `${value} `.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+            step={100}
           />
+
+          <Typography.Title level={4}>체류시간</Typography.Title>
+          <TimePicker
+            defaultValue={moment('00:00', 'HH:mm')}
+            format={'HH:mm'}
+            allowClear={false}
+          />
+
           <Typography.Title level={4}>메모</Typography.Title>
-          <Input.TextArea
-            placeholder="Autosize height based on content lines"
-            autosize
-          />
-          <Typography.Title level={4}>비용</Typography.Title>
-          <Input placeholder="비용" />
-          <Typography.Title level={4}>시간대</Typography.Title>
-          <Radio.Group>
-            <Radio.Button value="large">Moning</Radio.Button>
-            <Radio.Button value="default">Afternoon</Radio.Button>
-            <Radio.Button value="small">Evening</Radio.Button>
-          </Radio.Group>
+          <Input.TextArea placeholder="메모사항" rows={4} />
           <Button type="primary" block>
             작성완료
           </Button>

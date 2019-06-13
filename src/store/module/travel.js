@@ -3,9 +3,9 @@ import axios from 'axios';
 import moment from 'moment';
 
 //액션 타입 정의
-const GET_POST_PENDING = 'GET_POST_PENDING';
-const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
-const GET_POST_FAILURE = 'GET_POST_FAILURE';
+const GET_POST_PENDING = 'GET_POST_TRAVEL_PENDING';
+const GET_POST_SUCCESS = 'GET_POST_TRAVEL_SUCCESS';
+const GET_POST_FAILURE = 'GET_POST_TRAVEL_FAILURE';
 
 const EDITTITLE = 'editTitle';
 const EDITSDATE = 'editsDate';
@@ -133,7 +133,7 @@ export default handleActions(
     // 여행 일정 추가
     [ADDSCHEDULE]: (state, action) => {
       let id = 1;
-      if (state.travel.day.length == 0) {
+      if (state.travel.day.length === 0) {
         id = 1;
       } else {
         id = state.travel.day[state.travel.day.length - 1].id + 1;
