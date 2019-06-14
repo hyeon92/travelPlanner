@@ -49,7 +49,7 @@ const TravelList = TravelList => {
       }
       renderItem={item => (
         <List.Item>
-          <Link to="/MyList/1">
+          <Link to="/MyList/1/1">
             <Card title={item.title}>
               <h3>{item.area}</h3>
               <span>{item.schudule}</span>

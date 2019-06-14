@@ -19,7 +19,7 @@ export const editName = createAction(EDITNAME);
 const initialState = {
   status: 'pending',
   user: {
-    id: '',
+    user_id: '',
     password: '',
     name: ''
   }
@@ -32,7 +32,7 @@ export const singin = user => dispatch => {
   return axios
     .get('http://localhost:4000/users/select', {
       params: {
-        id: user.id,
+        user_id: user.user_id,
         password: user.password
       }
     })
@@ -57,7 +57,7 @@ export const signup = user => dispatch => {
   return axios
     .post('http://localhost:4000/users/insert', {
       params: {
-        id: user.id,
+        user_id: user.user_id,
         name: user.name,
         password: user.password
       }
@@ -85,7 +85,7 @@ export default handleActions(
   {
     // edit ID
     [EDITID]: (state, action) => {
-      return { ...state, user: { ...state.user, id: action.payload } };
+      return { ...state, user: { ...state.user, user_id: action.payload } };
     },
 
     // edit Password
@@ -109,7 +109,7 @@ export default handleActions(
         ...state,
         status: 'success',
         user: {
-          id: action.payload.data.id,
+          user_id: action.payload.data.user_id,
           password: action.payload.data.password,
           name: action.payload.data.name
         }

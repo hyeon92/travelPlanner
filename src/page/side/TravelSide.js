@@ -14,8 +14,8 @@ const TravelSide = ({
 }) => {
   if (!travelList) {
     travelList = {
-      key: null,
-      id: null,
+      travel_id: null,
+      user_id: null,
       sDate: null,
       eDate: null,
       title: null,
@@ -73,10 +73,13 @@ const TravelSide = ({
           renderItem={item => (
             <List.Item
               extra={[
-                <Icon type="delete" onClick={() => onDelSchedule(item.id)} />
+                <Icon
+                  type="delete"
+                  onClick={() => onDelSchedule(item.day_id)}
+                />
               ]}
             >
-              <Link to={`/MyList/${item.id}`}>
+              <Link to={`/MyList/${travelList.travel_id}/${item.day_id}`}>
                 <List.Item.Meta
                   avatar={<Avatar icon="pushpin" />}
                   title={item.title}

@@ -11,11 +11,15 @@ function App() {
     <Fragment>
       <Route exact path={'/'} component={LoginContainer} />
       <Route exact path={'/SignUp'} component={SignUpContainer} />
-      <Route exact path={'/MyList'} component={TravelListContainer} />
-      <Route exact path={'/:list/:id'} component={TravelContainer} />
+      <Route exact path={'/:list'} component={TravelListContainer} />
       <Route
         exact
-        path={'/MyList/:id/Detail'}
+        path={'/:list/:travel_id/:day_id'}
+        component={TravelContainer}
+      />
+      <Route
+        exact
+        path={'/:list/:travel_id/:day_id/:area_id'}
         component={TravelDetailContainer}
       />
     </Fragment>

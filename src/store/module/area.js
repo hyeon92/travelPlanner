@@ -46,18 +46,19 @@ const initialState = {
     memo: null // 메모
   }
 };
+
 // 여행 하루 일정 들고 오기
-export const getAreaList = (travelList, key) => dispatch => {
+export const getAreaList = (travelList, day_id) => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
   return axios
     .get(
       'http://localhost:4000/areas/select/' +
-        travelList.id +
+        travelList.user_id +
         '/' +
-        travelList.key +
+        travelList.travel_id +
         '/' +
-        key
+        day_id
     )
     .then(respone => {
       dispatch({
@@ -75,6 +76,83 @@ export const getAreaList = (travelList, key) => dispatch => {
     });
 };
 
+// 여행 지역 정보 들고오기 (get 1 Area Info)
+export const getAreaInfo = (travelList, area_id) => dispatch => {
+  dispatch({ type: GET_POST_PENDING });
+
+  return axios
+    .get(
+      'http://localhost:4000/areas/selectArea/' +
+        travelList.user_id +
+        '/' +
+        travelList.travel_id +
+        '/' +
+        area_id
+    )
+    .then(respone => {
+      dispatch({
+        type: GET_POST_SUCCESS,
+        eventNm: 'getAreaInfo',
+        payload: respone
+      });
+    })
+    .catch(error => {
+      dispatch({
+        type: GET_POST_FAILURE,
+        eventNm: 'getAreaInfo',
+        payload: error
+      });
+    });
+};
+
+// 여행 지역 정보 저장하기
+export const saveArea = (areaInfo, idInfo) => dispatch => {
+  dispatch({ type: GET_POST_PENDING });
+
+  return axios
+    .post(
+      'http://localhost:4000/areas/update/' +
+        idInfo.user_id +
+        '/' +
+        idInfo.travel_id +
+        '/' +
+        idInfo.day_id +
+        '/' +
+        idInfo.area_id,
+      {
+        params: {
+          area_id: idInfo.area_id, // 고유키
+          place_name: areaInfo.place_name, // 장소명
+          category: areaInfo.category, // 장소 카테고리
+          location_x: areaInfo.location_x, // x좌표
+          location_y: areaInfo.location_y, // y좌표
+          address: areaInfo.address, // 장소 주소
+          time: areaInfo.time, // 시간대
+          transport: areaInfo.transport, // 이동수단
+          move_time: areaInfo.move_time, // 이동시간
+          transport_cost: areaInfo.transport_cost, // 교통비
+          cost: areaInfo.cost, // 비용(입장료 등 기타비용)
+          stay_time: areaInfo.stay_time, // 체류시간
+          memo: areaInfo.memo // 메모
+        }
+      }
+    )
+    .then(respone => {
+      dispatch({
+        type: GET_POST_SUCCESS,
+        eventNm: 'saveTravelList',
+        payload: respone
+      });
+    })
+    .catch(error => {
+      dispatch({
+        type: GET_POST_FAILURE,
+        eventNm: 'saveTravelList',
+        payload: error
+      });
+    });
+};
+
 export default handleActions(
   {
     // 목적지 정보 수정
@@ -82,7 +160,7 @@ export default handleActions(
       return {
         ...state,
         area: {
-          ...state,
+          ...state.area,
           place_name: action.payload.place_name,
           category: action.payload.category_group_name,
           location_x: action.payload.x,

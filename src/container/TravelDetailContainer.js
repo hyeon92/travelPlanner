@@ -21,13 +21,12 @@ class TravelDetailContainer extends Component {
   }
 
   componentDidMount() {
-    const { travelActions } = this.props;
-
-    travelActions.getTravelList('123', 1);
+    // area_id 비교 후 신규건이 아닐 경우 area 정보 들고오기
+    // 참조 : this.porps.match.params.area_id
 
     const mapContainer = document.getElementById('map'), // 지도를 표시할 div
       mapOption = {
-        center: new daum.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        center: new daum.maps.LatLng(37.56647, 126.977963), // 지도의 중심좌표
         level: 3 // 지도의 확대 레벨
       };
 
@@ -399,14 +398,34 @@ class TravelDetailContainer extends Component {
     areaActions.editStayTime(e);
   };
 
+  // 메모를 수정했을 때 호출되는 함수입니다.
   handleEditMemo = e => {
     const { areaActions } = this.props;
 
     areaActions.editMemo(e.target.value);
   };
 
+  // 작성완료를 클릭했을 때 호출되는 함수입니다.
+  handleSave = e => {
+    const { areaInfo } = this.props;
+    const { areaActions } = this.props;
+
+    const idInfo = this.props.match.params;
+
+    // idInfo.user_id = travelList.user_id;
+    idInfo.user_id = '123';
+
+    // 목적지를 지정해야 저장이 가능합니다.
+    if (areaInfo.place_name === null) {
+      alert('목적지를 지정해주세요');
+      return false;
+    }
+
+    // areaActions.saveArea(areaInfo, idInfo);
+  };
+
   render() {
-    const { travelList, area } = this.props;
+    const { travelList, areaInfo } = this.props;
     const {
       handleEditTitle,
       handleEditsDate,
@@ -421,7 +440,8 @@ class TravelDetailContainer extends Component {
       handleEditTransportCost,
       handleEditCost,
       handleEditStayTime,
-      handleEditMemo
+      handleEditMemo,
+      handleSave
     } = this;
     return (
       <Fragment>
@@ -470,7 +490,7 @@ class TravelDetailContainer extends Component {
             </div>
           </div>
           <TravelDetail
-            area={area}
+            areaInfo={areaInfo}
             onEditTime={handleEditTime}
             onEditTransport={handleEditTransport}
             onEditMoveTime={handleEditMoveTime}
@@ -478,6 +498,7 @@ class TravelDetailContainer extends Component {
             onEditCost={handleEditCost}
             onEditStayTime={handleEditStayTime}
             onEditMemo={handleEditMemo}
+            onSave={handleSave}
           />
         </div>
       </Fragment>
@@ -491,7 +512,7 @@ export default connect(
     travelList: state.travel.travel,
     travelStatus: state.travel.status,
     travelEventNm: state.travel.eventNm,
-    area: state.area.area
+    areaInfo: state.area.area
   }),
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch),

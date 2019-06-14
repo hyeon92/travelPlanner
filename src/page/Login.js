@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const Login = ({ user, onEditID, onEditPW, onLogin }) => {
   if (!user) {
     user = {
-      id: null,
+      user_id: null,
       password: null
     };
   }
@@ -13,7 +13,12 @@ const Login = ({ user, onEditID, onEditPW, onLogin }) => {
     <div>
       <Typography.Title>로그인</Typography.Title>
       <Typography.Title level={4}>아이디</Typography.Title>
-      <Input placeholder="ID" allowClear value={user.id} onChange={onEditID} />
+      <Input
+        placeholder="ID"
+        allowClear
+        value={user.user_id}
+        onChange={onEditID}
+      />
       <Typography.Title level={4}>비밀번호</Typography.Title>
       <Input.Password
         placeholder="Password"

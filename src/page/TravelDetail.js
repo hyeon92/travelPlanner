@@ -7,28 +7,28 @@ import {
   TimePicker,
   InputNumber
 } from 'antd';
-import moment from 'moment';
 import 'page/TravelDetail.css';
 
 const TravelDetail = ({
-  area,
+  areaInfo,
   onEditTime,
   onEditTransport,
   onEditMoveTime,
   onEditTransportCost,
   onEditCost,
   onEditStayTime,
-  onEditMemo
+  onEditMemo,
+  onSave
 }) => {
   return (
     <Fragment>
       <div>
         <Typography.Title level={4}>목적지</Typography.Title>
-        <Input placeholder="목적지" disabled value={area.place_name} />
+        <Input placeholder="목적지" disabled value={areaInfo.place_name} />
 
         <Typography.Title level={4}>시간대</Typography.Title>
         <Radio.Group
-          value={area.time}
+          value={areaInfo.time}
           buttonStyle="solid"
           onChange={onEditTime}
         >
@@ -40,7 +40,7 @@ const TravelDetail = ({
         <Typography.Title level={4}>이동수단</Typography.Title>
         <Radio.Group
           buttonStyle="solid"
-          value={area.transport}
+          value={areaInfo.transport}
           onChange={onEditTransport}
         >
           <Radio.Button value="1">도보</Radio.Button>
@@ -52,14 +52,14 @@ const TravelDetail = ({
 
         <Typography.Title level={4}>이동시간</Typography.Title>
         <TimePicker
-          value={area.move_time}
+          value={areaInfo.move_time}
           onChange={onEditMoveTime}
           format={'HH:mm'}
         />
 
         <Typography.Title level={4}>교통비</Typography.Title>
         <InputNumber
-          value={area.transport_cost}
+          value={areaInfo.transport_cost}
           onChange={onEditTransportCost}
           formatter={value => `${value} `.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           step={100}
@@ -67,7 +67,7 @@ const TravelDetail = ({
 
         <Typography.Title level={4}>비용(입장료 등 기타비용)</Typography.Title>
         <InputNumber
-          value={area.cost}
+          value={areaInfo.cost}
           onChange={onEditCost}
           formatter={value => `${value} `.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           step={100}
@@ -75,7 +75,7 @@ const TravelDetail = ({
 
         <Typography.Title level={4}>체류시간</Typography.Title>
         <TimePicker
-          value={area.stay_time}
+          value={areaInfo.stay_time}
           onChange={onEditStayTime}
           format={'HH:mm'}
         />
@@ -84,10 +84,10 @@ const TravelDetail = ({
         <Input.TextArea
           placeholder="메모사항"
           rows={4}
-          value={area.memo}
+          value={areaInfo.memo}
           onChange={onEditMemo}
         />
-        <Button type="primary" block>
+        <Button type="primary" block onClick={onSave}>
           작성완료
         </Button>
       </div>

@@ -19,8 +19,8 @@ app.use(
 const User = require('./User');
 
 // 특정회원 여행계획 조회
-app.get('/select/:id', function(req, res) {
-  User.findOne({ id: req.params.id }, function(err, user) {
+app.get('/select/:user_id', function(req, res) {
+  User.findOne({ user_id: req.params.user_id }, function(err, user) {
     if (err) return res.status(500).send('User 조회 실패');
     if (!user) return res.status(404).send('User 없음.');
 
@@ -29,8 +29,8 @@ app.get('/select/:id', function(req, res) {
 });
 
 // 특정회원 제외한 여행계획 조회
-app.get('/selectOther/:id', function(req, res) {
-  User.findOne({ id: !req.params.id }, function(err, user) {
+app.get('/selectOther/:user_id', function(req, res) {
+  User.findOne({ user_id: !req.params.user_id }, function(err, user) {
     if (err) return res.status(500).send('User 조회 실패');
     if (!user) return res.status(404).send('User 없음.');
 
@@ -39,12 +39,12 @@ app.get('/selectOther/:id', function(req, res) {
 });
 
 // 특정 여행계획 조회
-app.get('/select/:id/:key', function(req, res) {
+app.get('/select/:user_id/:travel_id', function(req, res) {
   User.findOne(
     {
-      id: req.params.id,
+      user_id: req.params.user_id,
       travel: {
-        $elemMatch: { key: req.params.key }
+        $elemMatch: { travel_id: req.params.travel_id }
       }
     },
     function(err, user) {
@@ -57,12 +57,12 @@ app.get('/select/:id/:key', function(req, res) {
 });
 
 // 여행 계획 업데이트
-app.post('/update/:id/:key', function(req, res) {
+app.post('/update/:user_id/:travel_id', function(req, res) {
   User.updateOne(
     {
-      id: req.params.id,
+      user_id: req.params.user_id,
       travel: {
-        $elemMatch: { key: req.params.key }
+        $elemMatch: { travel_id: req.params.travel_id }
       }
     },
     {
@@ -85,7 +85,7 @@ app.post('/update/:id/:key', function(req, res) {
 // 여행일정 추가 test
 app.post('/insert', function(req, res) {
   User.updateOne(
-    { id: 123, travel: [{ title: '11' }] },
+    { user_id: 123, travel: [{ title: '11' }] },
     { travel: { title: '1111' } },
     function(err, user) {
       if (err) return res.status(500).send('User 조회 실패');
@@ -96,7 +96,7 @@ app.post('/insert', function(req, res) {
   );
   // User.create(
   //   {
-  //     id: req.body.params.id,
+  //     user_id: req.body.params.user_id,
   //     password: req.body.params.password,
   //     name: req.body.params.name
   //   },
@@ -112,9 +112,9 @@ app.post('/insert', function(req, res) {
 // 여행일정 삭제
 
 // test
-app.put('/:id/:tst', function(req, res) {
+app.put('/:user_id/:tst', function(req, res) {
   User.findByIdAndUpdate(
-    req.params.id,
+    req.params.user_id,
     { $set: { travel: req.query } },
     { new: true },
     function(err, user) {

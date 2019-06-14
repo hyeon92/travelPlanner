@@ -21,24 +21,24 @@ User = require('./User');
 
 // 로그인 처리
 app.get('/select', function(req, res) {
-  User.findOne({ id: req.query.id, password: req.query.password }, function(
-    err,
-    user
-  ) {
-    if (err) return res.status(500).send('User 조회 실패');
-    if (!user) return res.status(404).send('User 없음.');
+  User.findOne(
+    { user_id: req.query.user_id, password: req.query.password },
+    function(err, user) {
+      if (err) return res.status(500).send('User 조회 실패');
+      if (!user) return res.status(404).send('User 없음.');
 
-    req.session.user = user;
+      req.session.user = user;
 
-    res.status(200).send(user);
-  });
+      res.status(200).send(user);
+    }
+  );
 });
 
 // 회원 신규등록
 app.post('/insert', function(req, res) {
   User.create(
     {
-      id: req.body.params.id,
+      user_id: req.body.params.user_id,
       password: req.body.params.password,
       name: req.body.params.name
     },

@@ -18,7 +18,8 @@ const Travel = ({ areaList }) => {
         dataSource={areaList.area}
         footer={
           <div>
-            <Link to="/MyList/Add/Detail">
+            {/* 마지막 1의 경우 areaList의 마지막 숫자가 들어갈 수 있도록 수정 예정 */}
+            <Link to={`/MyList/1/1/1`}>
               <Icon type="plus" />
               <span> ADD </span>
             </Link>
@@ -26,7 +27,7 @@ const Travel = ({ areaList }) => {
         }
         renderItem={item => (
           <List.Item>
-            <Link to="/MyList/1/Detail">
+            <Link to="/MyList/1/1/1">
               <List.Item.Meta
                 avatar={<Avatar icon="shop" />}
                 title={item.area}

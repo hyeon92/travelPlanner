@@ -9,7 +9,7 @@ import MainSide from 'page/side/MainSide';
 class TravelListContainer extends Component {
   componentDidMount() {
     // const { travelActions } = this.props;
-    // // travelActions.getTravelList(user.id);
+    // // travelActions.getTravelList(user.user_id);
     // travelActions.getTravelList('123');
   }
   render() {

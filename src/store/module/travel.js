@@ -23,14 +23,14 @@ const initialState = {
   eventNm: null,
   status: 'pending',
   travel: {
-    key: null,
-    id: null,
+    travel_id: null,
+    user_id: null,
     sDate: moment().format('YYYY-MM-DD'),
     eDate: moment().format('YYYY-MM-DD'),
     title: moment().format('YYYY-MM-DD') + ' 여행계획',
     day: [
       {
-        id: 1,
+        day_id: 1,
         title: '1일차',
         date: moment().format('YYYY-MM-DD')
       }
@@ -39,11 +39,11 @@ const initialState = {
 };
 
 // 여행 계획 들고오기
-export const getTravelList = (userId, key) => dispatch => {
+export const getTravelList = (userId, travel_id) => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
   return axios
-    .get('http://localhost:4000/travels/select/' + userId + '/' + key)
+    .get('http://localhost:4000/travels/select/' + userId + '/' + travel_id)
     .then(respone => {
       dispatch({
         type: GET_POST_SUCCESS,
@@ -66,7 +66,10 @@ export const saveTravelList = travel => dispatch => {
 
   return axios
     .post(
-      'http://localhost:4000/travels/update/' + travel.id + '/' + travel.key,
+      'http://localhost:4000/travels/update/' +
+        travel.user_id +
+        '/' +
+        travel.travel_id,
       {
         params: {
           sDate: travel.sDate,
@@ -136,7 +139,7 @@ export default handleActions(
       if (state.travel.day.length === 0) {
         id = 1;
       } else {
-        id = state.travel.day[state.travel.day.length - 1].id + 1;
+        id = state.travel.day[state.travel.day.length - 1].day_id + 1;
       }
       return {
         ...state,
@@ -148,7 +151,7 @@ export default handleActions(
           day: [
             ...state.travel.day,
             {
-              id: id,
+              day_id: id,
               title: `${state.travel.day.length + 1}일차`,
               date: moment(state.travel.sDate)
                 .add(state.travel.day.length, 'days')
@@ -165,7 +168,7 @@ export default handleActions(
       // 선택한 여행일정 삭제
       day.splice(
         day.findIndex(function(item) {
-          return item.id === action.payload;
+          return item.day_id === action.payload;
         }),
         1
       );

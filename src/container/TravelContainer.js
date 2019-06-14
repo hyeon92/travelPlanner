@@ -44,7 +44,7 @@ class TravelContainer extends Component {
       travelStatus === 'success' &&
       areaList == null
     ) {
-      areaActions.getAreaList(travelList, this.props.match.params.id);
+      areaActions.getAreaList(travelList, this.props.match.params.user_id);
     }
   }
 
@@ -70,10 +70,10 @@ class TravelContainer extends Component {
   };
 
   // 여행 일정 삭제
-  handleDelSchedule = key => {
+  handleDelSchedule = travel_id => {
     const { travelActions } = this.props;
 
-    travelActions.delSchedule(key);
+    travelActions.delSchedule(travel_id);
   };
 
   // 여행계획 저장

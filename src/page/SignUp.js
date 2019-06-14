@@ -4,7 +4,7 @@ import { Typography, Input, Button } from 'antd';
 const SignUp = ({ user, onEditID, onEditName, onEditPW, onSignUp }) => {
   if (!user) {
     user = {
-      id: null,
+      user_id: null,
       password: null,
       name: null
     };
@@ -13,7 +13,12 @@ const SignUp = ({ user, onEditID, onEditName, onEditPW, onSignUp }) => {
     <div>
       <Typography.Title>회원가입</Typography.Title>
       <Typography.Title level={4}>아이디</Typography.Title>
-      <Input placeholder="ID" allowClear value={user.id} onChange={onEditID} />
+      <Input
+        placeholder="ID"
+        allowClear
+        value={user.user_id}
+        onChange={onEditID}
+      />
       <Typography.Title level={4}>이름</Typography.Title>
       <Input
         placeholder="Name"
