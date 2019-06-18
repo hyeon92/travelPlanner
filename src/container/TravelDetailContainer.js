@@ -2,7 +2,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as userActions from 'store/module/user';
 import * as travelActions from 'store/module/travel';
 import * as areaActions from 'store/module/area';
 import TravelDetail from 'page/TravelDetail';
@@ -548,16 +547,12 @@ class TravelDetailContainer extends Component {
 
 export default connect(
   state => ({
-    user: state.user.user,
     travelList: state.travel.travel,
-    travelStatus: state.travel.status,
-    travelEventNm: state.travel.eventNm,
     areaInfo: state.area.area,
     areaStatus: state.area.status,
     areaEventNm: state.area.eventNm
   }),
   dispatch => ({
-    userActions: bindActionCreators(userActions, dispatch),
     travelActions: bindActionCreators(travelActions, dispatch),
     areaActions: bindActionCreators(areaActions, dispatch)
   })

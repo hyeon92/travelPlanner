@@ -2,17 +2,26 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as userActions from 'store/module/user';
 import * as travelActions from 'store/module/travel';
-import * as areaActions from 'store/module/area';
+import * as dayActions from 'store/module/day';
 import Travel from 'page/Travel';
 import TravelSide from 'page/side/TravelSide';
 
 class TravelContainer extends Component {
   componentDidMount() {
-    const { travelActions } = this.props;
+    const { dayActions, travelActions } = this.props;
 
-    travelActions.getTravelList('123', 1);
+    // 데이터를 가져오기 위해 파라미터 세팅
+    const params = this.props.match.params;
+    const info = {};
+
+    info.user_id = '123';
+    info.travel_id = params.travel_id;
+    info.day_id = params.day_id;
+
+    // 여행 정보, 지역 정보 들고오기
+    travelActions.getTravelList(info);
+    dayActions.getAreaList(info);
 
     const mapContainer = document.getElementById('map'), // 지도를 표시할 div
       mapOption = {
@@ -25,26 +34,25 @@ class TravelContainer extends Component {
   }
 
   componentDidUpdate() {
-    const { travelList, travelStatus, travelEventNm, areaList } = this.props;
-    const { travelActions, areaActions } = this.props;
+    const { travelStatus, travelEventNm } = this.props;
+    const { travelActions } = this.props;
 
     // 여행 계획 저장
     if (travelEventNm === 'saveTravelList') {
       if (travelStatus === 'success') {
+        // 데이터를 가져오기 위한 파라미터 세팅
+        const params = this.props.match.params;
+        const info = {};
+
+        info.user_id = '123';
+        info.travel_id = params.travel_id;
+        info.day_id = params.day_id;
+
         alert('저장이 완료되었습니다.');
-        travelActions.getTravelList('123', 1);
+        travelActions.getTravelList(info);
       } else if (travelStatus === 'error') {
         alert('저장 중 오류가 생겼습니다. 다시 시도해주십시오');
       }
-    }
-
-    // 지역 리스트 불러오기
-    if (
-      travelEventNm === 'getTravelList' &&
-      travelStatus === 'success' &&
-      areaList == null
-    ) {
-      areaActions.getAreaList(travelList, this.props.match.params.user_id);
     }
   }
 
@@ -85,7 +93,7 @@ class TravelContainer extends Component {
   };
 
   render() {
-    const { travelList, areaList } = this.props;
+    const { travelList, day } = this.props;
     const {
       handleEditTitle,
       handleEditsDate,
@@ -114,7 +122,7 @@ class TravelContainer extends Component {
         >
           <div id="map" style={{ height: 300 }} />
 
-          <Travel areaList={areaList} />
+          <Travel areaList={day} params={this.props.match.params} />
         </div>
       </Fragment>
     );
@@ -123,15 +131,13 @@ class TravelContainer extends Component {
 
 export default connect(
   state => ({
-    user: state.user.user,
     travelList: state.travel.travel,
     travelStatus: state.travel.status,
     travelEventNm: state.travel.eventNm,
-    areaList: state.area.area
+    day: state.day.day
   }),
   dispatch => ({
-    userActions: bindActionCreators(userActions, dispatch),
     travelActions: bindActionCreators(travelActions, dispatch),
-    areaActions: bindActionCreators(areaActions, dispatch)
+    dayActions: bindActionCreators(dayActions, dispatch)
   })
 )(TravelContainer);

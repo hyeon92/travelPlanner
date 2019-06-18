@@ -39,11 +39,16 @@ const initialState = {
 };
 
 // 여행 계획 들고오기
-export const getTravelList = (userId, travel_id) => dispatch => {
+export const getTravelList = info => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
   return axios
-    .get('http://localhost:4000/travels/select/' + userId + '/' + travel_id)
+    .get(
+      'http://localhost:4000/travels/select/' +
+        info.user_id +
+        '/' +
+        info.travel_id
+    )
     .then(respone => {
       dispatch({
         type: GET_POST_SUCCESS,

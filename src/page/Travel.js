@@ -2,15 +2,27 @@ import React, { Fragment } from 'react';
 import { List, Avatar, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 
-const Travel = ({ areaList }) => {
+const Travel = ({ areaList, params }) => {
   if (!areaList) {
     areaList = {
-      id: null,
+      day_id: null,
       title: null,
       date: null,
       area: []
     };
   }
+
+  // 새로운 지역 등록 시 id 지정
+  let nextId = 1;
+
+  // if (
+  //   !(
+  //     areaList.area === undefined &&
+  //     areaList.area[areaList.area.length - 1] === undefined
+  //   )
+  // ) {
+  //   nextId = areaList.area[areaList.area.length - 1].area_id + 1;
+  // }
 
   return (
     <Fragment>
@@ -18,8 +30,11 @@ const Travel = ({ areaList }) => {
         dataSource={areaList.area}
         footer={
           <div>
-            {/* 마지막 1의 경우 areaList의 마지막 숫자가 들어갈 수 있도록 수정 예정 */}
-            <Link to={`/MyList/1/1/1`}>
+            <Link
+              to={`/${params.list}/${params.travel_id}/${
+                params.day_id
+              }/${nextId}`}
+            >
               <Icon type="plus" />
               <span> ADD </span>
             </Link>
@@ -27,10 +42,14 @@ const Travel = ({ areaList }) => {
         }
         renderItem={item => (
           <List.Item>
-            <Link to="/MyList/1/1/1">
+            <Link
+              to={`/${params.list}/${params.travel_id}/${params.day_id}/${
+                item.area_id
+              }`}
+            >
               <List.Item.Meta
                 avatar={<Avatar icon="shop" />}
-                title={item.area}
+                title={item.place_name}
                 description={item.memo}
               />
             </Link>

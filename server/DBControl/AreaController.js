@@ -19,15 +19,15 @@ app.use(
 const User = require('./User');
 
 // 특정 여행일자의 모든 지역 조회
-app.get('/select/:user_id/:travel_key/:day_id', function(req, res) {
+app.get('/selectAll/:user_id/:travel_id/:day_id', function(req, res) {
   User.findOne(
     {
       user_id: req.params.user_id,
       travel: {
         $elemMatch: {
-          key: req.params.travel_key,
+          travel_id: req.params.travel_id,
           day: {
-            $elemMatch: { id: req.params.day_id }
+            $elemMatch: { day_id: req.params.day_id }
           }
         }
       }
@@ -40,7 +40,7 @@ app.get('/select/:user_id/:travel_key/:day_id', function(req, res) {
       let travel = user.travel.find(travel => {
         return (
           travel.user_id === req.params.user_id &&
-          travel.travel_id === parseInt(req.params.travel_key)
+          travel.travel_id === parseInt(req.params.travel_id)
         );
       });
 
@@ -106,23 +106,12 @@ app.post('/update/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
   User.updateOne(
     {
       user_id: req.params.user_id,
-      travel: {
-        $elemMatch: {
-          travel_id: req.params.travel_id,
-          day: {
-            $elemMatch: {
-              day_id: req.params.day_id,
-              area: {
-                $elemMatch: { area_id: req.params.area_id }
-              }
-            }
-          }
-        }
-      }
+      'travel.travel_id': req.params.travel_id,
+      'travel.day.day_id': req.params.day_id,
+      'travel.day.area.area_id': req.params.area_id
     },
     {
       $set: {
-        'travel.$[].day.$[].area.$.area_id': req.body.params.area_id,
         'travel.$[].day.$[].area.$.place_name': req.body.params.place_name,
         'travel.$[].day.$[].area.$.category': req.body.params.category,
         'travel.$[].day.$[].area.$.location_x': req.body.params.location_x,

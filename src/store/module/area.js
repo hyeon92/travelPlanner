@@ -48,35 +48,6 @@ const initialState = {
   }
 };
 
-// 여행 하루 일정 들고 오기
-export const getAreaList = (travelList, day_id) => dispatch => {
-  dispatch({ type: GET_POST_PENDING });
-
-  return axios
-    .get(
-      'http://localhost:4000/areas/select/' +
-        travelList.user_id +
-        '/' +
-        travelList.travel_id +
-        '/' +
-        day_id
-    )
-    .then(respone => {
-      dispatch({
-        type: GET_POST_SUCCESS,
-        eventNm: 'getAreaList',
-        payload: respone
-      });
-    })
-    .catch(error => {
-      dispatch({
-        type: GET_POST_FAILURE,
-        eventNm: 'getAreaList',
-        payload: error
-      });
-    });
-};
-
 // 여행 지역 정보 들고오기 (get 1 Area Info)
 export const getAreaInfo = info => dispatch => {
   dispatch({ type: GET_POST_PENDING });
