@@ -18,19 +18,16 @@ app.use(
 );
 const User = require('./User');
 
-// 특정회원 여행계획 조회
-app.get('/select/:user_id', function(req, res) {
-  User.findOne({ user_id: req.params.user_id }, function(err, user) {
-    if (err) return res.status(500).send('User 조회 실패');
-    if (!user) return res.status(404).send('User 없음.');
+// 특정회원 여행계획 리스트 조회
+app.get('/selectAll/:listName/:user_id', function(req, res) {
+  let query = {};
+  if (req.params.listName === 'MyList') {
+    query = { user_id: req.params.user_id };
+  } else {
+    query = { user_id: { $ne: req.params.user_id } };
+  }
 
-    res.status(200).send(user);
-  });
-});
-
-// 특정회원 제외한 여행계획 조회
-app.get('/selectOther/:user_id', function(req, res) {
-  User.findOne({ user_id: !req.params.user_id }, function(err, user) {
+  User.findOne(query, function(err, user) {
     if (err) return res.status(500).send('User 조회 실패');
     if (!user) return res.status(404).send('User 없음.');
 

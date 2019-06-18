@@ -13,9 +13,6 @@ class SignUpContainer extends Component {
       this.props.history.push('/');
     } else if (status === 'error') {
       alert('다시 입력해주세요');
-
-      // status 값 초기화
-      userActions.basicStatus();
     }
   }
   // ID 변경

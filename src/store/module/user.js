@@ -18,10 +18,12 @@ export const editName = createAction(EDITNAME);
 //모듈 초기상태 정의
 const initialState = {
   status: 'pending',
+  eventNm: null,
   user: {
     user_id: '',
     password: '',
-    name: ''
+    name: '',
+    travel: []
   }
 };
 
@@ -39,12 +41,14 @@ export const singin = user => dispatch => {
     .then(respone => {
       dispatch({
         type: GET_POST_SUCCESS,
+        eventNm: 'singin',
         payload: respone
       });
     })
     .catch(error => {
       dispatch({
         type: GET_POST_FAILURE,
+        eventNm: 'singin',
         payload: error
       });
     });
@@ -65,60 +69,94 @@ export const signup = user => dispatch => {
     .then(respone => {
       dispatch({
         type: GET_POST_SUCCESS,
+        eventNm: 'signup',
         payload: respone
       });
     })
     .catch(error => {
       dispatch({
         type: GET_POST_FAILURE,
+        eventNm: 'signup',
         payload: error
       });
     });
 };
 
-// 상태값 초기화
-export const basicStatus = () => dispatch => {
+// 여행 계획 정보 들고오기
+export const getTravelList = info => dispatch => {
   dispatch({ type: GET_POST_PENDING });
-};
 
+  return axios
+    .get(
+      'http://localhost:4000/travels/selectAll/' +
+        info.listName +
+        '/' +
+        info.user_id
+    )
+    .then(respone => {
+      dispatch({
+        type: GET_POST_SUCCESS,
+        eventNm: 'getTravelList',
+        payload: respone
+      });
+    })
+    .catch(error => {
+      dispatch({
+        type: GET_POST_FAILURE,
+        eventNm: 'getTravelList',
+        payload: error
+      });
+    });
+};
 export default handleActions(
   {
     // edit ID
     [EDITID]: (state, action) => {
-      return { ...state, user: { ...state.user, user_id: action.payload } };
+      return {
+        ...state,
+        eventNm: EDITID,
+        user: { ...state.user, user_id: action.payload }
+      };
     },
 
     // edit Password
     [EDITPW]: (state, action) => {
-      return { ...state, user: { ...state.user, password: action.payload } };
+      return {
+        ...state,
+        eventNm: EDITPW,
+        user: { ...state.user, password: action.payload }
+      };
     },
 
     // edit Name
     [EDITNAME]: (state, action) => {
-      return { ...state, user: { ...state.user, name: action.payload } };
+      return {
+        ...state,
+        eventNm: EDITNAME,
+        user: { ...state.user, name: action.payload }
+      };
     },
 
     [GET_POST_PENDING]: (state, action) => {
       return {
         ...state,
-        status: 'pending'
+        status: 'pending',
+        eventNm: action.eventNm
       };
     },
     [GET_POST_SUCCESS]: (state, action) => {
       return {
         ...state,
         status: 'success',
-        user: {
-          user_id: action.payload.data.user_id,
-          password: action.payload.data.password,
-          name: action.payload.data.name
-        }
+        eventNm: action.eventNm,
+        user: action.payload.data
       };
     },
     [GET_POST_FAILURE]: (state, action) => {
       return {
         ...state,
-        status: 'error'
+        status: 'error',
+        eventNm: action.eventNm
       };
     }
   },

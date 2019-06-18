@@ -56,22 +56,37 @@ app.get('/selectAll/:user_id/:travel_id/:day_id', function(req, res) {
 
 // 여행 지역 정보 들고오기 (get 1 Area Info)
 app.get('/selectArea/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
+  // let query = User.where({ 'travel.day.area.area_id': 1 })
+  //   // .equals('travel.day.area.area_id', 1)
+  //   .select('travel.day.area.area_id');
+
+  // query.find(function(err, user) {
+  //   if (err) return res.status(500).send('Area 조회 실패');
+  //   if (!user) return res.status(404).send('Area 없음.');
+
+  //   res.status(200).send(user);
+  // });
+
   User.findOne(
     {
       user_id: req.params.user_id,
-      travel: {
-        $elemMatch: {
-          travel_id: req.params.travel_id,
-          day: {
-            $elemMatch: {
-              day_id: req.params.day_id,
-              area: {
-                $elemMatch: { area_id: req.params.area_id }
-              }
-            }
-          }
-        }
-      }
+      'travel.travel_id': req.params.travel_id,
+      'travel.day.day_id': req.params.day_id,
+      'travel.day.area.area_id': req.params.area_id
+      // user_id: req.params.user_id,
+      // travel: {
+      //   $elemMatch: {
+      //     travel_id: req.params.travel_id,
+      //     day: {
+      //       $elemMatch: {
+      //         day_id: req.params.day_id,
+      //         area: {
+      //           $elemMatch: { area_id: req.params.area_id }
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
     },
     function(err, user) {
       if (err) return res.status(500).send('Area 조회 실패');
@@ -97,6 +112,7 @@ app.get('/selectArea/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
       });
 
       res.status(200).send(area);
+      // res.status(200).send(user);
     }
   );
 });

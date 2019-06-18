@@ -1,20 +1,23 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-// import { bindActionCreators } from 'redux';
-// import * as userActions from 'store/module/user';
-// import * as travelActions from 'store/module/travel';
+import { bindActionCreators } from 'redux';
+import * as userActions from 'store/module/user';
 import TravelList from 'page/TravelList';
 import MainSide from 'page/side/MainSide';
 
 class TravelListContainer extends Component {
   componentDidMount() {
-    // const { travelActions } = this.props;
-    // // travelActions.getTravelList(user.user_id);
-    // travelActions.getTravelList('123');
+    const { userActions } = this.props;
+
+    let info = {};
+
+    info.listName = this.props.match.params.list;
+    info.user_id = '123';
+
+    userActions.getTravelList(info);
   }
   render() {
-    // const { travelList } = this.props;
-    // return <TravelList travelList={travelList} />;
+    const { user } = this.props;
     return (
       <Fragment>
         <MainSide />
@@ -26,7 +29,7 @@ class TravelListContainer extends Component {
             minHeight: 1000
           }}
         >
-          <TravelList />
+          <TravelList travelList={user} params={this.props.match.params} />
         </div>
       </Fragment>
     );
@@ -34,9 +37,8 @@ class TravelListContainer extends Component {
 }
 
 export default connect(
-  state => ({}),
+  state => ({ user: state.user.user }),
   dispatch => ({
-    // travelActions: bindActionCreators(travelActions, dispatch),
-    // userActions: bindActionCreators(userActions, dispatch)
+    userActions: bindActionCreators(userActions, dispatch)
   })
 )(TravelListContainer);

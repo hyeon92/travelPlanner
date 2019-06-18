@@ -1,58 +1,50 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { List, Card, Icon } from 'antd';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
-const TravelList = TravelList => {
-  const data = [
-    {
-      id: 1,
-      title: '여행제목 1',
-      area: '홍콩',
-      schudule: '05.27 ~ 05.30'
-    },
-    {
-      id: 2,
-      title: '여행제목 2',
-      area: '마닐라',
-      schudule: '06.01 ~ 06.06'
-    },
-    {
-      id: 3,
-      title: '여행제목 3',
-      area: '대만',
-      schudule: '05.12 ~ 06.17'
-    },
-    {
-      id: 4,
-      title: '여행제목 4',
-      area: '일본',
-      schudule: '07.07 ~ 07.20'
-    },
-    {
-      id: 5,
-      title: '여행제목 5',
-      area: '태국',
-      schudule: '07.27 ~ 07.30'
-    }
-  ];
+const TravelList = ({ travelList, params }) => {
+  // 새로운 여행 등록 시 id 지정
+  let nextId;
+
+  if (travelList.travel === undefined || travelList.travel.length === 0) {
+    nextId = 1;
+  } else {
+    nextId = travelList.travel[travelList.travel.length - 1].travel_id + 1;
+  }
+
   return (
     <List
       grid={{ gutter: 16, column: 4 }}
-      dataSource={data}
+      dataSource={travelList.travel}
       footer={
-        <Link to="/MyList/Add">
-          <Card>
-            <Icon type="plus" />
-            <span> ADD </span>
-          </Card>
-        </Link>
+        params.list === 'MyList' ? (
+          <Link to={`/MyList/${nextId}/1`}>
+            <Card>
+              <Icon type="plus" />
+              <span> ADD </span>
+            </Card>
+          </Link>
+        ) : (
+          <Fragment />
+        )
       }
       renderItem={item => (
         <List.Item>
-          <Link to="/MyList/1/1">
-            <Card title={item.title}>
-              <h3>{item.area}</h3>
-              <span>{item.schudule}</span>
+          <Link to={`/${params.list}/${item.travel_id}/1`}>
+            <Card
+              hoverable
+              style={{ width: 240 }}
+              cover={<img alt="example" src="https://bit.ly/2IQyAci" />}
+            >
+              <Card.Meta
+                title={item.title}
+                description={
+                  moment(item.sDate).format('YYYY-MM-DD') +
+                  ' ~ ' +
+                  moment(item.eDate).format('YYYY-MM-DD')
+                }
+              />
             </Card>
           </Link>
         </List.Item>

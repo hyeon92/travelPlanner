@@ -20,7 +20,7 @@ class TravelContainer extends Component {
     info.day_id = params.day_id;
 
     // 여행 정보, 지역 정보 들고오기
-    travelActions.getTravelList(info);
+    travelActions.getTravelInfo(info);
     dayActions.getAreaList(info);
 
     const mapContainer = document.getElementById('map'), // 지도를 표시할 div
@@ -49,7 +49,7 @@ class TravelContainer extends Component {
         info.day_id = params.day_id;
 
         alert('저장이 완료되었습니다.');
-        travelActions.getTravelList(info);
+        travelActions.getTravelInfo(info);
       } else if (travelStatus === 'error') {
         alert('저장 중 오류가 생겼습니다. 다시 시도해주십시오');
       }

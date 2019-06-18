@@ -38,8 +38,8 @@ const initialState = {
   }
 };
 
-// 여행 계획 들고오기
-export const getTravelList = info => dispatch => {
+// 여행 계획 정보 들고오기
+export const getTravelInfo = info => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
   return axios
@@ -52,14 +52,14 @@ export const getTravelList = info => dispatch => {
     .then(respone => {
       dispatch({
         type: GET_POST_SUCCESS,
-        eventNm: 'getTravelList',
+        eventNm: 'getTravelInfo',
         payload: respone
       });
     })
     .catch(error => {
       dispatch({
         type: GET_POST_FAILURE,
-        eventNm: 'getTravelList',
+        eventNm: 'getTravelInfo',
         payload: error
       });
     });

@@ -13,16 +13,13 @@ const Travel = ({ areaList, params }) => {
   }
 
   // 새로운 지역 등록 시 id 지정
-  let nextId = 1;
+  let nextId;
 
-  // if (
-  //   !(
-  //     areaList.area === undefined &&
-  //     areaList.area[areaList.area.length - 1] === undefined
-  //   )
-  // ) {
-  //   nextId = areaList.area[areaList.area.length - 1].area_id + 1;
-  // }
+  if (areaList.area === undefined || areaList.area.length === 0) {
+    nextId = 1;
+  } else {
+    nextId = areaList.area[areaList.area.length - 1].area_id + 1;
+  }
 
   return (
     <Fragment>

@@ -7,15 +7,12 @@ import Login from 'page/Login';
 class LoginContainer extends Component {
   // status값에 따라 반응
   componentDidUpdate() {
-    const { status, userActions } = this.props;
+    const { status } = this.props;
 
     if (status === 'success') {
       this.props.history.push('/MyList');
     } else if (status === 'error') {
       alert('아이디 혹은 비밀번호가 맞지 않습니다.');
-
-      // status 값 초기화
-      userActions.basicStatus();
     }
   }
 

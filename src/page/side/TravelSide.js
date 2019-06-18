@@ -65,7 +65,7 @@ const TravelSide = ({
         <List
           dataSource={travelList.day}
           footer={
-            <div onClick={onAddSchedule}>
+            <div onClick={onAddSchedule} style={{ cursor: 'Pointer' }}>
               <Icon type="plus" />
               <span> ADD </span>
             </div>
