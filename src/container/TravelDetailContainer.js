@@ -21,8 +21,18 @@ class TravelDetailContainer extends Component {
   }
 
   componentDidMount() {
-    // area_id 비교 후 신규건이 아닐 경우 area 정보 들고오기
-    // 참조 : this.porps.match.params.area_id
+    const { areaActions } = this.props;
+
+    const params = this.props.match.params;
+
+    const info = {};
+
+    info.user_id = '123';
+    info.travel_id = params.travel_id;
+    info.day_id = params.day_id;
+    info.area_id = params.area_id;
+
+    areaActions.getAreaInfo(info);
 
     const mapContainer = document.getElementById('map'), // 지도를 표시할 div
       mapOption = {
@@ -34,6 +44,31 @@ class TravelDetailContainer extends Component {
     this.setState({
       map: new daum.maps.Map(mapContainer, mapOption)
     });
+  }
+  componentDidUpdate() {
+    const { areaInfo, areaStatus, areaEventNm } = this.props;
+    const { addMarker } = this;
+
+    if (areaStatus === 'success') {
+      if (areaEventNm === 'getAreaInfo') {
+        // 저장했던 위치로 이동합니다.
+        const moveLocation = new daum.maps.LatLng(
+          areaInfo.location_y,
+          areaInfo.location_x
+        );
+        this.state.map.setLevel(3);
+        this.state.map.panTo(moveLocation);
+
+        addMarker(moveLocation, 0);
+      }
+      if (areaEventNm === 'saveTravelList') {
+        const listName = this.props.match.params.list;
+        const travelId = this.props.match.params.travel_id;
+        const dayId = this.props.match.params.day_id;
+        alert('저장이 완료되었습니다.');
+        this.props.history.push(`/${listName}/${travelId}/${dayId}`);
+      }
+    }
   }
 
   // 여행 제목을 수정할 때 호출되는 함수입니다.
@@ -75,7 +110,7 @@ class TravelDetailContainer extends Component {
   // 지도 키워드 검색 요청할 때 호출되는 함수입니다.
   handleSearchPlaces = () => {
     const { displayPlaces, displayPagination } = this;
-    let keyword = document.getElementById('keyword').value;
+    const keyword = document.getElementById('keyword').value;
 
     if (!keyword.replace(/^\s+|\s+$/g, '')) {
       alert('키워드를 입력해주세요!');
@@ -110,7 +145,7 @@ class TravelDetailContainer extends Component {
     } = this;
     const { areaActions } = this.props;
 
-    let listEl = document.getElementById('placesList'),
+    const listEl = document.getElementById('placesList'),
       menuEl = document.getElementById('menu_wrap'),
       fragment = document.createDocumentFragment(),
       bounds = new daum.maps.LatLngBounds();
@@ -132,7 +167,7 @@ class TravelDetailContainer extends Component {
         clickImage = createMarkerImage('click');
 
       // 마커를 생성하고 지도에 표시합니다
-      let placePosition = new daum.maps.LatLng(places[i].y, places[i].x),
+      const placePosition = new daum.maps.LatLng(places[i].y, places[i].x),
         marker = addMarker(placePosition, i),
         itemEl = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성합니다
 
@@ -251,15 +286,15 @@ class TravelDetailContainer extends Component {
 
   // 검색결과 항목을 Element로 반환하는 함수입니다
   getListItem = (index, places) => {
-    let el = document.createElement('li'),
-      itemStr =
-        '<span class="markerbg marker_' +
-        (index + 1) +
-        '"></span>' +
-        '<div class="info">' +
-        '   <h5>' +
-        places.place_name +
-        '</h5>';
+    const el = document.createElement('li');
+    let itemStr =
+      '<span class="markerbg marker_' +
+      (index + 1) +
+      '"></span>' +
+      '<div class="info">' +
+      '   <h5>' +
+      places.place_name +
+      '</h5>';
 
     if (places.road_address_name) {
       itemStr +=
@@ -283,7 +318,7 @@ class TravelDetailContainer extends Component {
 
   // 인포윈도우에 장소명을 표시합니다
   displayInfowindow = (marker, title) => {
-    let content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+    const content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
 
     this.state.infowindow.setContent(content);
     this.state.infowindow.open(this.state.map, marker);
@@ -421,7 +456,11 @@ class TravelDetailContainer extends Component {
       return false;
     }
 
-    // areaActions.saveArea(areaInfo, idInfo);
+    if (areaInfo._id === null) {
+      areaActions.insertArea(areaInfo, idInfo);
+    } else {
+      areaActions.updateArea(areaInfo, idInfo);
+    }
   };
 
   render() {
@@ -443,6 +482,7 @@ class TravelDetailContainer extends Component {
       handleEditMemo,
       handleSave
     } = this;
+
     return (
       <Fragment>
         <TravelSide
@@ -512,7 +552,9 @@ export default connect(
     travelList: state.travel.travel,
     travelStatus: state.travel.status,
     travelEventNm: state.travel.eventNm,
-    areaInfo: state.area.area
+    areaInfo: state.area.area,
+    areaStatus: state.area.status,
+    areaEventNm: state.area.eventNm
   }),
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch),

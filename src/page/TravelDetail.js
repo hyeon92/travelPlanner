@@ -8,6 +8,7 @@ import {
   InputNumber
 } from 'antd';
 import 'page/TravelDetail.css';
+import moment from 'moment';
 
 const TravelDetail = ({
   areaInfo,
@@ -52,7 +53,7 @@ const TravelDetail = ({
 
         <Typography.Title level={4}>이동시간</Typography.Title>
         <TimePicker
-          value={areaInfo.move_time}
+          value={moment(areaInfo.move_time)}
           onChange={onEditMoveTime}
           format={'HH:mm'}
         />
@@ -75,7 +76,7 @@ const TravelDetail = ({
 
         <Typography.Title level={4}>체류시간</Typography.Title>
         <TimePicker
-          value={areaInfo.stay_time}
+          value={moment(areaInfo.stay_time)}
           onChange={onEditStayTime}
           format={'HH:mm'}
         />

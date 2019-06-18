@@ -31,6 +31,7 @@ const initialState = {
   eventNm: null,
   status: 'pending',
   area: {
+    _id: null, // db 고유키
     area_id: null, // 고유키
     place_name: null, // 장소명
     category: null, // 장소 카테고리
@@ -77,17 +78,19 @@ export const getAreaList = (travelList, day_id) => dispatch => {
 };
 
 // 여행 지역 정보 들고오기 (get 1 Area Info)
-export const getAreaInfo = (travelList, area_id) => dispatch => {
+export const getAreaInfo = info => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
   return axios
     .get(
       'http://localhost:4000/areas/selectArea/' +
-        travelList.user_id +
+        info.user_id +
         '/' +
-        travelList.travel_id +
+        info.travel_id +
         '/' +
-        area_id
+        info.day_id +
+        '/' +
+        info.area_id
     )
     .then(respone => {
       dispatch({
@@ -105,13 +108,13 @@ export const getAreaInfo = (travelList, area_id) => dispatch => {
     });
 };
 
-// 여행 지역 정보 저장하기
-export const saveArea = (areaInfo, idInfo) => dispatch => {
+// 지역 선택 업데이트 (not insert)
+export const insertArea = (areaInfo, idInfo) => dispatch => {
   dispatch({ type: GET_POST_PENDING });
 
   return axios
     .post(
-      'http://localhost:4000/areas/update/' +
+      'http://localhost:4000/areas/insert/' +
         idInfo.user_id +
         '/' +
         idInfo.travel_id +
@@ -121,11 +124,11 @@ export const saveArea = (areaInfo, idInfo) => dispatch => {
         idInfo.area_id,
       {
         params: {
-          area_id: idInfo.area_id, // 고유키
+          area_id: parseInt(idInfo.area_id), // 고유키
           place_name: areaInfo.place_name, // 장소명
           category: areaInfo.category, // 장소 카테고리
-          location_x: areaInfo.location_x, // x좌표
-          location_y: areaInfo.location_y, // y좌표
+          location_x: parseFloat(areaInfo.location_x), // x좌표
+          location_y: parseFloat(areaInfo.location_y), // y좌표
           address: areaInfo.address, // 장소 주소
           time: areaInfo.time, // 시간대
           transport: areaInfo.transport, // 이동수단
@@ -153,12 +156,110 @@ export const saveArea = (areaInfo, idInfo) => dispatch => {
     });
 };
 
+// 지역 선택 업데이트 (not insert)
+export const updateArea = (areaInfo, idInfo) => dispatch => {
+  dispatch({ type: GET_POST_PENDING });
+
+  return axios
+    .post(
+      'http://localhost:4000/areas/update/' +
+        idInfo.user_id +
+        '/' +
+        idInfo.travel_id +
+        '/' +
+        idInfo.day_id +
+        '/' +
+        idInfo.area_id,
+      {
+        params: {
+          area_id: parseInt(idInfo.area_id), // 고유키
+          place_name: areaInfo.place_name, // 장소명
+          category: areaInfo.category, // 장소 카테고리
+          location_x: parseFloat(areaInfo.location_x), // x좌표
+          location_y: parseFloat(areaInfo.location_y), // y좌표
+          address: areaInfo.address, // 장소 주소
+          time: areaInfo.time, // 시간대
+          transport: areaInfo.transport, // 이동수단
+          move_time: areaInfo.move_time, // 이동시간
+          transport_cost: areaInfo.transport_cost, // 교통비
+          cost: areaInfo.cost, // 비용(입장료 등 기타비용)
+          stay_time: areaInfo.stay_time, // 체류시간
+          memo: areaInfo.memo // 메모
+        }
+      }
+    )
+    .then(respone => {
+      dispatch({
+        type: GET_POST_SUCCESS,
+        eventNm: 'saveTravelList',
+        payload: respone
+      });
+    })
+    .catch(error => {
+      dispatch({
+        type: GET_POST_FAILURE,
+        eventNm: 'saveTravelList',
+        payload: error
+      });
+    });
+};
+
+// 여행 지역 정보 upsert
+// export const saveArea = (areaInfo, idInfo) => dispatch => {
+//   dispatch({ type: GET_POST_PENDING });
+
+//   return axios
+//     .post(
+//       'http://localhost:4000/areas/update/' +
+//         idInfo.user_id +
+//         '/' +
+//         idInfo.travel_id +
+//         '/' +
+//         idInfo.day_id +
+//         '/' +
+//         idInfo.area_id,
+//       {
+//         params: {
+//           // area_id: parseInt(idInfo.area_id), // 고유키
+//           area_id: 3,
+//           place_name: areaInfo.place_name, // 장소명
+//           category: areaInfo.category, // 장소 카테고리
+//           location_x: parseFloat(areaInfo.location_x), // x좌표
+//           location_y: parseFloat(areaInfo.location_y), // y좌표
+//           address: areaInfo.address, // 장소 주소
+//           time: areaInfo.time, // 시간대
+//           transport: areaInfo.transport, // 이동수단
+//           move_time: areaInfo.move_time, // 이동시간
+//           transport_cost: areaInfo.transport_cost, // 교통비
+//           cost: areaInfo.cost, // 비용(입장료 등 기타비용)
+//           stay_time: areaInfo.stay_time, // 체류시간
+//           memo: areaInfo.memo // 메모
+//         }
+//       }
+//     )
+//     .then(respone => {
+//       dispatch({
+//         type: GET_POST_SUCCESS,
+//         eventNm: 'saveTravelList',
+//         payload: respone
+//       });
+//     })
+//     .catch(error => {
+//       dispatch({
+//         type: GET_POST_FAILURE,
+//         eventNm: 'saveTravelList',
+//         payload: error
+//       });
+//     });
+// };
+
 export default handleActions(
   {
     // 목적지 정보 수정
     [EDITPLACEINFO]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITPLACEINFO,
         area: {
           ...state.area,
           place_name: action.payload.place_name,
@@ -174,6 +275,7 @@ export default handleActions(
     [EDITTIME]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITTIME,
         area: {
           ...state.area,
           time: action.payload
@@ -185,6 +287,7 @@ export default handleActions(
     [EDITTRANSPORT]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITTRANSPORT,
         area: {
           ...state.area,
           transport: action.payload
@@ -196,6 +299,7 @@ export default handleActions(
     [EDITMOVETIME]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITMOVETIME,
         area: {
           ...state.area,
           move_time: action.payload
@@ -207,6 +311,7 @@ export default handleActions(
     [EDITTRANSPORTCOST]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITTRANSPORTCOST,
         area: {
           ...state.area,
           transport_cost: action.payload
@@ -218,6 +323,7 @@ export default handleActions(
     [EDITCOST]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITCOST,
         area: {
           ...state.area,
           cost: action.payload
@@ -229,6 +335,7 @@ export default handleActions(
     [EDITSTAYTIME]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITSTAYTIME,
         area: {
           ...state.area,
           stay_time: action.payload
@@ -240,6 +347,7 @@ export default handleActions(
     [EDITMEMO]: (state, action) => {
       return {
         ...state,
+        eventNm: EDITMEMO,
         area: {
           ...state.area,
           memo: action.payload
