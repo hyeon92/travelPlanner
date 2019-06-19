@@ -9,6 +9,7 @@ const SignUp = ({ user, onEditID, onEditName, onEditPW, onSignUp }) => {
       name: null
     };
   }
+
   return (
     <div>
       <Typography.Title>회원가입</Typography.Title>
@@ -33,7 +34,16 @@ const SignUp = ({ user, onEditID, onEditName, onEditPW, onSignUp }) => {
         onChange={onEditPW}
       />
       <br />
-      <Button type="primary" ghost onClick={onSignUp}>
+      <Button
+        size="large"
+        onClick={onSignUp}
+        style={{
+          background: '#545871',
+          color: '#FFFFFF',
+          marginTop: '10px',
+          fontSize: '24px'
+        }}
+      >
         회원가입
       </Button>
     </div>

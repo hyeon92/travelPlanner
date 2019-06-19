@@ -25,11 +25,26 @@ const Login = ({ user, onEditID, onEditPW, onLogin }) => {
         value={user.password}
         onChange={onEditPW}
       />
-      <Button type="primary" onClick={onLogin}>
+      <Button
+        onClick={onLogin}
+        size="large"
+        style={{
+          background: '#545871',
+          color: '#FFFFFF',
+          fontSize: '24px',
+          marginTop: '10px',
+          marginRight: '10px'
+        }}
+      >
         로그인
       </Button>
-      <Link to="/signUp">
-        <Button type="primary">회원가입</Button>
+      <Link to="/SignUp/Insert">
+        <Button
+          size="large"
+          style={{ background: '#545871', color: '#FFFFFF', fontSize: '24px' }}
+        >
+          회원가입
+        </Button>
       </Link>
     </div>
   );

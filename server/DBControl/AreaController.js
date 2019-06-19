@@ -34,22 +34,27 @@ app.get('/selectAll/:user_id/:travel_id/:day_id', function(req, res) {
     },
     function(err, user) {
       if (err) return res.status(500).send('Area 조회 실패');
-      if (!user) return res.status(404).send('Area 없음.');
+      // if (!user) return res.status(404).send('Area 없음.');
 
-      // 유저ID와 여행계획key 필터
-      let travel = user.travel.find(travel => {
-        return (
-          travel.user_id === req.params.user_id &&
-          travel.travel_id === parseInt(req.params.travel_id)
-        );
-      });
+      if (user) {
+        // 유저ID와 여행계획key 필터
+        let travel = user.travel.find(travel => {
+          return (
+            travel.user_id === req.params.user_id &&
+            travel.travel_id === parseInt(req.params.travel_id)
+          );
+        });
 
-      // 여행일정 id 필터
-      let day = travel.day.find(day => {
-        return day.day_id === parseInt(req.params.day_id);
-      });
+        // 여행일정 id 필터
+        let day = travel.day.find(day => {
+          return day.day_id === parseInt(req.params.day_id);
+        });
 
-      res.status(200).send(day);
+        res.status(200).send(day);
+      } else {
+        const day = { area: [] };
+        res.status(200).send(day);
+      }
     }
   );
 });

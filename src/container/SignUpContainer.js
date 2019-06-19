@@ -7,12 +7,15 @@ import SignUp from 'page/SignUp';
 class SignUpContainer extends Component {
   // status값에 따라 반응
   componentDidUpdate() {
-    const { status } = this.props;
+    const { status, eventNm } = this.props;
 
-    if (status === 'success') {
-      this.props.history.push('/');
-    } else if (status === 'error') {
-      alert('다시 입력해주세요');
+    // 회원가입 버튼 클릭 이벤트
+    if (eventNm === 'singup') {
+      if (status === 'success') {
+        this.props.history.push('/');
+      } else if (status === 'error') {
+        alert('다시 입력해주세요');
+      }
     }
   }
   // ID 변경
@@ -44,19 +47,31 @@ class SignUpContainer extends Component {
     const { handleEditID, handleEditName, handleEditPW, handleSignUp } = this;
 
     return (
-      <SignUp
-        user={user}
-        onEditID={handleEditID}
-        onEditName={handleEditName}
-        onEditPW={handleEditPW}
-        onSignUp={handleSignUp}
-      />
+      <div
+        style={{
+          padding: 24,
+          background: '#F7ECEB',
+          minHeight: 1000
+        }}
+      >
+        <SignUp
+          user={user}
+          onEditID={handleEditID}
+          onEditName={handleEditName}
+          onEditPW={handleEditPW}
+          onSignUp={handleSignUp}
+        />
+      </div>
     );
   }
 }
 
 export default connect(
-  state => ({ user: state.user.user, status: state.user.status }),
+  state => ({
+    user: state.user.user,
+    status: state.user.status,
+    eventNm: state.user.eventNm
+  }),
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch)
   })

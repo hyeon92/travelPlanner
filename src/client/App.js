@@ -10,7 +10,7 @@ function App() {
   return (
     <Fragment>
       <Route exact path={'/'} component={LoginContainer} />
-      <Route exact path={'/SignUp'} component={SignUpContainer} />
+      <Route exact path={'/SignUp/Insert'} component={SignUpContainer} />
       <Route exact path={'/:list'} component={TravelListContainer} />
       <Route
         exact

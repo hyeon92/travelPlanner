@@ -7,12 +7,14 @@ import Login from 'page/Login';
 class LoginContainer extends Component {
   // status값에 따라 반응
   componentDidUpdate() {
-    const { status } = this.props;
-
-    if (status === 'success') {
-      this.props.history.push('/MyList');
-    } else if (status === 'error') {
-      alert('아이디 혹은 비밀번호가 맞지 않습니다.');
+    const { status, eventNm } = this.props;
+    // 로그인 버튼 클릭 이벤트
+    if (eventNm === 'singin') {
+      if (status === 'success') {
+        this.props.history.push('/MyList');
+      } else if (status === 'error') {
+        alert('아이디 혹은 비밀번호가 맞지 않습니다.');
+      }
     }
   }
 
@@ -39,18 +41,30 @@ class LoginContainer extends Component {
     const { handleEditID, handleEditPW, handleLogin } = this;
 
     return (
-      <Login
-        user={user}
-        onEditID={handleEditID}
-        onEditPW={handleEditPW}
-        onLogin={handleLogin}
-      />
+      <div
+        style={{
+          padding: 24,
+          background: '#F7ECEB',
+          minHeight: 1000
+        }}
+      >
+        <Login
+          user={user}
+          onEditID={handleEditID}
+          onEditPW={handleEditPW}
+          onLogin={handleLogin}
+        />
+      </div>
     );
   }
 }
 
 export default connect(
-  state => ({ user: state.user.user, status: state.user.status }),
+  state => ({
+    user: state.user.user,
+    status: state.user.status,
+    eventNm: state.user.eventNm
+  }),
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch)
   })

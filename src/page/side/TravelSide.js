@@ -1,6 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Layout, Icon, List, Avatar, DatePicker, Input, Button } from 'antd';
+import {
+  Layout,
+  Icon,
+  List,
+  Avatar,
+  DatePicker,
+  Input,
+  Button,
+  Typography
+} from 'antd';
 import 'antd/dist/antd.css';
 import moment from 'moment';
 
@@ -10,7 +19,8 @@ const TravelSide = ({
   onEditsDate,
   onAddSchedule,
   onDelSchedule,
-  onSaveTravel
+  onSaveTravel,
+  onChangeDay
 }) => {
   if (!travelList) {
     travelList = {
@@ -29,25 +39,29 @@ const TravelSide = ({
         overflow: 'auto',
         height: '100vh',
         position: 'fixed',
-        left: 0
+        left: 0,
+        padding: '5px'
       }}
     >
       <Input
+        style={{ width: '100%' }}
         value={travelList.title}
         placeholder="여행제목"
         onChange={onEditTitle}
       />
-      <div className="trigger">
-        <div>여행 시작일</div>
+      <div style={{ marginTop: '20px' }}>
+        <span style={{ color: '#F0F1F7', fontWeight: 'bold' }}> 시작일자 </span>
         <DatePicker
+          style={{ width: '70%', marginBottom: '5px' }}
           placeholder="Start"
           format="YYYY-MM-DD"
           allowClear={false}
           value={moment(travelList.sDate)}
           onChange={onEditsDate}
         />
-        <div>여행 마지막일</div>
+        <span style={{ color: '#F0F1F7', fontWeight: 'bold' }}> 종료일자 </span>
         <DatePicker
+          style={{ width: '70%' }}
           disabled
           placeholder="End"
           format="YYYY-MM-DD"
@@ -55,42 +69,60 @@ const TravelSide = ({
           value={moment(travelList.eDate)}
         />
       </div>
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          padding: '5px',
-          margin: '10px'
-        }}
-      >
+      <div style={{ marginTop: '20px' }}>
         <List
           dataSource={travelList.day}
           footer={
-            <div onClick={onAddSchedule} style={{ cursor: 'Pointer' }}>
+            <div
+              onClick={onAddSchedule}
+              style={{
+                cursor: 'Pointer',
+                background: '#DADBE6',
+                height: '40px',
+                lineHeight: '40px',
+                paddingLeft: '5px',
+                borderRadius: '5px'
+              }}
+            >
               <Icon type="plus" />
               <span> ADD </span>
             </div>
           }
           renderItem={item => (
-            <List.Item
-              extra={[
-                <Icon
-                  type="delete"
-                  onClick={() => onDelSchedule(item.day_id)}
-                />
-              ]}
-            >
-              <Link to={`/MyList/${travelList.travel_id}/${item.day_id}`}>
+            <Link to={`/MyList/${travelList.travel_id}/${item.day_id}`}>
+              <List.Item
+                style={{
+                  background: '#F0F1F7',
+                  borderRadius: '5px',
+                  marginTop: '5px',
+                  padding: '5px'
+                }}
+                extra={[
+                  <Icon
+                    type="delete"
+                    theme="twoTone"
+                    twoToneColor="#545871"
+                    onClick={() => onDelSchedule(item.day_id)}
+                  />
+                ]}
+              >
                 <List.Item.Meta
-                  avatar={<Avatar icon="pushpin" />}
+                  onClick={() => onChangeDay(item.day_id)}
+                  avatar={
+                    <Avatar icon="pushpin" style={{ background: '#9597A6' }} />
+                  }
                   title={item.title}
                   description={moment(item.date).format('YYYY-MM-DD')}
                 />
-              </Link>
-            </List.Item>
+              </List.Item>
+            </Link>
           )}
         />
       </div>
-      <Button block onClick={onSaveTravel}>
+      <Button
+        onClick={onSaveTravel}
+        style={{ width: '100%', background: '#9597A6' }}
+      >
         저장
       </Button>
     </Layout.Sider>
