@@ -5,38 +5,46 @@ import * as userActions from 'store/module/user';
 import SignUp from 'page/SignUp';
 
 class SignUpContainer extends Component {
-  // status값에 따라 반응
-  componentDidUpdate() {
-    const { status, eventNm } = this.props;
+  componentDidMount() {
+    const { userActions } = this.props;
 
-    // 회원가입 버튼 클릭 이벤트
-    if (eventNm === 'singup') {
-      if (status === 'success') {
+    userActions.clearUser();
+  }
+
+  componentDidUpdate() {
+    const { status, bEventNm, nEventNm } = this.props;
+
+    // 회원 가입 버튼 클릭 시 성공여부에 따라 반응합니다.
+    if (nEventNm === 'SIGN_UP') {
+      if (bEventNm !== 'SIGN_UP' && status === 'SUCCESS') {
+        alert('회원가입이 완료되었습니다. 다시 로그인해주시기 바랍니다.');
+
+        // /로 이동합니다.
         this.props.history.push('/');
-      } else if (status === 'error') {
+      } else if (status === 'ERROR') {
         alert('다시 입력해주세요');
       }
     }
   }
-  // ID 변경
+  // ID를 입력한 값으로 변경합니다.
   handleEditID = e => {
     const { userActions } = this.props;
     userActions.editID(e.target.value);
   };
 
-  //이름 변경
+  // 이름을 입력한 값으로 변경합니다.
   handleEditName = e => {
     const { userActions } = this.props;
     userActions.editName(e.target.value);
   };
 
-  // PW 변경
+  // PW를 입력한 값으로 변경합니다.
   handleEditPW = e => {
     const { userActions } = this.props;
     userActions.editPW(e.target.value);
   };
 
-  // 회원가입 버튼 클릭
+  // 회원가입 버튼을 클릭합니다.
   handleSignUp = e => {
     const { userActions, user } = this.props;
     userActions.signup(user);
@@ -70,7 +78,8 @@ export default connect(
   state => ({
     user: state.user.user,
     status: state.user.status,
-    eventNm: state.user.eventNm
+    bEventNm: state.user.bEventNm,
+    nEventNm: state.user.nEventNm
   }),
   dispatch => ({
     userActions: bindActionCreators(userActions, dispatch)

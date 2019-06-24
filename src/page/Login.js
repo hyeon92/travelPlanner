@@ -24,6 +24,7 @@ const Login = ({ user, onEditID, onEditPW, onLogin }) => {
         placeholder="Password"
         value={user.password}
         onChange={onEditPW}
+        onPressEnter={onLogin}
       />
       <Button
         onClick={onLogin}

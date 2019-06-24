@@ -6,6 +6,7 @@ import * as travelActions from 'store/module/travel';
 import * as areaActions from 'store/module/area';
 import TravelDetail from 'page/TravelDetail';
 import TravelSide from 'page/side/TravelSide';
+import storage from 'lib/storage';
 
 class TravelDetailContainer extends Component {
   constructor(props) {
@@ -13,24 +14,37 @@ class TravelDetailContainer extends Component {
     this.state = {
       map: null,
       ps: new daum.maps.services.Places(),
-      infowindow: new daum.maps.InfoWindow({ zIndex: 1 }),
-      markers: [],
-      selectedMarker: null
+      infoWindow: new daum.maps.InfoWindow({ zIndex: 1 }), // 마커의 말풍선입니다.
+      markers: [], // 마커들을 저장하는 배열입니다.
+      selectedMarker: null // 선택되어진 마커입니다.
     };
   }
 
   componentDidMount() {
-    const { areaActions } = this.props;
+    const { areaActions, travelActions } = this.props;
+    const { travelList } = this.props;
+    const {
+      match: {
+        params: { travel_id, day_id, area_id }
+      }
+    } = this.props;
 
-    const params = this.props.match.params;
-
+    // 데이터를 가져오기 위해 파라미터를 세팅합니다.
     const info = {};
+    const userInfo = storage.get('userInfo');
 
-    info.user_id = '123';
-    info.travel_id = params.travel_id;
-    info.day_id = params.day_id;
-    info.area_id = params.area_id;
+    info.user_id = userInfo.user_id;
+    info.travel_id = travel_id;
+    info.day_id = day_id;
+    info.area_id = area_id;
 
+    // 사이드 메뉴의 데이터가 없을 경우 해당 정보를 불러옵니다.
+    if (travelList.travel_id === null) {
+      // 사이드 메뉴에 필요한 여행 정보를 가져옵니다.
+      travelActions.getTravelInfo(info);
+    }
+
+    // 메인 화면에 필요한 장소 정보를 가져옵니다.
     areaActions.getAreaInfo(info);
 
     const mapContainer = document.getElementById('map'), // 지도를 표시할 div
@@ -45,60 +59,70 @@ class TravelDetailContainer extends Component {
     });
   }
   componentDidUpdate() {
-    const { areaInfo, areaStatus, areaEventNm } = this.props;
+    const { areaInfo, aStatus, aBEventNm, aNEventNm } = this.props;
     const { addMarker } = this;
+    const {
+      match: {
+        params: { list, travel_id, day_id }
+      }
+    } = this.props;
 
-    if (areaStatus === 'success') {
-      if (areaEventNm === 'getAreaInfo') {
-        // 저장했던 위치로 이동합니다.
+    if (aNEventNm === 'GET_AREA_INFO') {
+      // 장소 정보를 가져온 후 성공여부에 따라 반응합니다.
+      if (aBEventNm !== 'GET_AREA_INFO' && aStatus === 'SUCCESS') {
+        // 장소 정보에 있는 위치를 저장합니다.
         const moveLocation = new daum.maps.LatLng(
           areaInfo.location_y,
           areaInfo.location_x
         );
+
+        // 지도에서 저장한 위치로 이동합니다.
         this.state.map.setLevel(3);
         this.state.map.panTo(moveLocation);
 
+        // 저장한 위치에 마커와 말풍선을 추가합니다.
         addMarker(moveLocation, 0);
       }
-      if (areaEventNm === 'saveTravelList') {
-        const listName = this.props.match.params.list;
-        const travelId = this.props.match.params.travel_id;
-        const dayId = this.props.match.params.day_id;
+    } else if (aNEventNm === 'SAVE_TRAVEL_LIST') {
+      // 장소 정보를 저장 후 성공여부에 따라 반응합니다.
+      if (aBEventNm !== 'SAVE_TRAVEL_LIST' && aStatus === 'SUCCESS') {
         alert('저장이 완료되었습니다.');
-        this.props.history.push(`/${listName}/${travelId}/${dayId}`);
+        this.props.history.push(`/${list}/${travel_id}/${day_id}`);
+      } else if (aStatus === 'ERROR') {
+        alert('저장 중 오류가 발생하였습니다. 다시 시도해주시기 바랍니다.');
       }
     }
   }
 
-  // 여행 제목을 수정할 때 호출되는 함수입니다.
+  // 여행 제목을 입력한 값으로 변경합니다.
   handleEditTitle = e => {
     const { travelActions } = this.props;
 
     travelActions.editTitle(e.target.value);
   };
 
-  // 여행 시작일자를 수정할 때 호출되는 함수입니다.
+  // 여행 시작일자를 입력한 값으로 변경합니다.
   handleEditsDate = (e, value) => {
     const { travelActions } = this.props;
 
     travelActions.editsDate(value);
   };
 
-  // 여행 일정(DAY)을 추가할때 호출되는 함수입니다.
+  // 사이드 메뉴의 여행 일정 추가 버튼을 클릭하여 추가합니다.
   handleAddSchedule = e => {
     const { travelActions } = this.props;
 
     travelActions.addSchedule();
   };
 
-  // 여행 일정(DAY)을 삭제할 때 호출되는 함수입니다.
+  // 사이드 메뉴의 여행 일정 삭제 버튼을 클릭하여 삭제합니다.
   handleDelSchedule = key => {
     const { travelActions } = this.props;
 
     travelActions.delSchedule(key);
   };
 
-  // 여행계획(TRAVEL)을 저장할 때 호출되는 함수입니다.
+  // 여행계획 저장 버튼을 클릭하여 저장합니다.
   handleSaveTravel = e => {
     const { travelActions } = this.props;
     const { travelList } = this.props;
@@ -106,7 +130,7 @@ class TravelDetailContainer extends Component {
     travelActions.saveTravelList(travelList);
   };
 
-  // 지도 키워드 검색 요청할 때 호출되는 함수입니다.
+  // 지도의 키워드 검색 버튼을 클릭하여 장소를 검색합니다.
   handleSearchPlaces = () => {
     const { displayPlaces, displayPagination } = this;
     const keyword = document.getElementById('keyword').value;
@@ -134,12 +158,12 @@ class TravelDetailContainer extends Component {
     });
   };
 
-  // 검색 결과 목록과 마커를 표출하는 함수입니다
+  // 검색 결과를 결과 목록과 해당 지역정보를 지도에 마커로 표시합니다.
   displayPlaces = places => {
     const {
       addMarker,
       getListItem,
-      displayInfowindow,
+      displayInfoWindow,
       createMarkerImage
     } = this;
     const { areaActions } = this.props;
@@ -173,13 +197,17 @@ class TravelDetailContainer extends Component {
       // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해 LatLngBounds 객체에 좌표를 추가합니다
       bounds.extend(placePosition);
 
-      // 마커에 mouseover 이벤트와 mouseout 이벤트, click 이벤트를 등록합니다
+      // 마커에 mouseover 이벤트를 등록합니다
       daum.maps.event.addListener(marker, 'mouseover', () => {
-        displayInfowindow(marker, places[i].place_name);
+        displayInfoWindow(marker, places[i].place_name);
       });
+
+      // 마커에 mouseout 이벤트를 등록합니다.
       daum.maps.event.addListener(marker, 'mouseout', () => {
-        this.state.infowindow.close();
+        this.state.infoWindow.close();
       });
+
+      // 마커에 click 이벤트를 등록합니다.
       daum.maps.event.addListener(marker, 'click', () => {
         // 클릭된 마커가 없고, click 마커가 클릭된 마커가 아니면 마커의 이미지를 클릭 이미지로 변경합니다
         if (
@@ -214,12 +242,12 @@ class TravelDetailContainer extends Component {
         this.state.map.setLevel(5);
         this.state.map.panTo(marker.getPosition());
 
-        displayInfowindow(marker, places[i].place_name);
+        displayInfoWindow(marker, places[i].place_name);
       };
 
       // mouseout 했을 때는 인포윈도우를 닫습니다
       itemEl.onmouseout = () => {
-        this.state.infowindow.close();
+        this.state.infoWindow.close();
       };
 
       // click 했을 때 클릭 이벤트를 발생 시킵니다.
@@ -261,7 +289,7 @@ class TravelDetailContainer extends Component {
     this.state.map.setBounds(bounds);
   };
 
-  // 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
+  // 마커를 생성하고 지도 위에 마커를 표시합니다.
   addMarker = (position, idx) => {
     const imageSrc =
         'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
@@ -283,7 +311,7 @@ class TravelDetailContainer extends Component {
     return marker;
   };
 
-  // 검색결과 항목을 Element로 반환하는 함수입니다
+  // 검색결과 항목을 Element로 반환합니다.
   getListItem = (index, places) => {
     const el = document.createElement('li');
     let itemStr =
@@ -316,14 +344,14 @@ class TravelDetailContainer extends Component {
   };
 
   // 인포윈도우에 장소명을 표시합니다
-  displayInfowindow = (marker, title) => {
+  displayInfoWindow = (marker, title) => {
     const content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
 
-    this.state.infowindow.setContent(content);
-    this.state.infowindow.open(this.state.map, marker);
+    this.state.infoWindow.setContent(content);
+    this.state.infoWindow.open(this.state.map, marker);
   };
 
-  // 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
+  // 검색결과 목록 하단에 페이지번호를 표시합니다.
   displayPagination = pagination => {
     const paginationEl = document.getElementById('pagination'),
       fragment = document.createDocumentFragment();
@@ -382,7 +410,7 @@ class TravelDetailContainer extends Component {
     }
   };
 
-  // 키워드 검색 창에 엔터 키 클릭했을 때 호출되는 함수입니다.,
+  // 키워드 검색 창에 엔터하여 검색합니다.
   handlePressEnter = e => {
     const { handleSearchPlaces } = this;
     if (e.key === 'Enter') {
@@ -390,64 +418,64 @@ class TravelDetailContainer extends Component {
     }
   };
 
-  // 시간대 라디오 버튼을 클릭했을 때 호출되는 함수입니다.
+  // 시간대 라디오 버튼을 입력한 값으로 변경합니다.
   handleEditTime = e => {
     const { areaActions } = this.props;
 
     areaActions.editTime(e.target.value);
   };
 
-  // 이동수단 라디오 버튼을 클릭했을 때 호출되는 함수입니다.
+  // 이동수단 라디오 버튼을 입력한 값으로 변경합니다.
   handleEditTransport = e => {
     const { areaActions } = this.props;
 
     areaActions.editTransport(e.target.value);
   };
 
-  // 이동시간을 수정했을 때 호출되는 함수입니다.
+  // 이동시간을 입력한 값으로 변경합니다.
   handleEditMoveTime = e => {
     const { areaActions } = this.props;
 
     areaActions.editMoveTime(e);
   };
 
-  // 교통비를 수정했을 때 호출되는 함수입니다.
+  // 교통비를 입력한 값으로 변경합니다.
   handleEditTransportCost = e => {
     const { areaActions } = this.props;
 
     areaActions.editTransportCost(e);
   };
 
-  // 비용(입장료 등 기타비용)이 수정했을 때 호출되는 함수입니다.
+  // 비용(입장료 등 기타비용)을 입력한 값으로 변경합니다.
   handleEditCost = e => {
     const { areaActions } = this.props;
 
     areaActions.editCost(e);
   };
 
-  // 체류시간을 수정했을 때 호출되는 함수입니다.
+  // 체류시간을 입력한 값으로 변경합니다.
   handleEditStayTime = e => {
     const { areaActions } = this.props;
 
     areaActions.editStayTime(e);
   };
 
-  // 메모를 수정했을 때 호출되는 함수입니다.
+  // 메모를 입력한 값으로 변경합니다.
   handleEditMemo = e => {
     const { areaActions } = this.props;
 
     areaActions.editMemo(e.target.value);
   };
 
-  // 작성완료를 클릭했을 때 호출되는 함수입니다.
+  // 작성완료를 클릭하여 지역 정보를 저장합니다.
   handleSave = e => {
     const { areaInfo } = this.props;
     const { areaActions } = this.props;
 
+    const userInfo = storage.get('userInfo');
     const idInfo = this.props.match.params;
 
-    // idInfo.user_id = travelList.user_id;
-    idInfo.user_id = '123';
+    idInfo.user_id = userInfo.user_id;
 
     // 목적지를 지정해야 저장이 가능합니다.
     if (areaInfo.place_name === null) {
@@ -455,11 +483,7 @@ class TravelDetailContainer extends Component {
       return false;
     }
 
-    if (areaInfo._id === null) {
-      areaActions.insertArea(areaInfo, idInfo);
-    } else {
-      areaActions.updateArea(areaInfo, idInfo);
-    }
+    // areaActions.saveArea(areaInfo, idInfo);
   };
 
   render() {
@@ -549,8 +573,9 @@ export default connect(
   state => ({
     travelList: state.travel.travel,
     areaInfo: state.area.area,
-    areaStatus: state.area.status,
-    areaEventNm: state.area.eventNm
+    aStatus: state.area.status,
+    aBEventNm: state.area.bEventNm,
+    aNEventNm: state.area.nEventNm
   }),
   dispatch => ({
     travelActions: bindActionCreators(travelActions, dispatch),

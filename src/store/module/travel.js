@@ -3,25 +3,28 @@ import axios from 'axios';
 import moment from 'moment';
 
 //액션 타입 정의
-const GET_POST_PENDING = 'GET_POST_TRAVEL_PENDING';
-const GET_POST_SUCCESS = 'GET_POST_TRAVEL_SUCCESS';
-const GET_POST_FAILURE = 'GET_POST_TRAVEL_FAILURE';
+const PENDING = 'TRAVEL_PENDING';
+const SUCCESS = 'TRAVEL_SUCCESS';
+const FAILURE = 'TRAVEL_FAILURE';
 
-const EDITTITLE = 'editTitle';
-const EDITSDATE = 'editsDate';
-const ADDSCHEDULE = 'addSchedule';
-const DELSCHEDULE = 'delSchedule';
+const EDIT_TITLE = 'EDIT_TITLE';
+const EDIT_SDATE = 'EDIT_SDATE';
+const ADD_SCHEDULE = 'ADD_SCHEDULE';
+const DEL_SCHEDULE = 'DEL_SCHEDULE';
+const SET_ID = 'SET_ID';
 
 //액션 생성 함수 만들기
-export const editTitle = createAction(EDITTITLE);
-export const editsDate = createAction(EDITSDATE);
-export const addSchedule = createAction(ADDSCHEDULE);
-export const delSchedule = createAction(DELSCHEDULE);
+export const editTitle = createAction(EDIT_TITLE);
+export const editsDate = createAction(EDIT_SDATE);
+export const addSchedule = createAction(ADD_SCHEDULE);
+export const delSchedule = createAction(DEL_SCHEDULE);
+export const setId = createAction(SET_ID);
 
 //모듈 초기상태 정의
 const initialState = {
-  eventNm: null,
-  status: 'pending',
+  bEventNm: null,
+  nEventNm: null,
+  status: 'PENDING',
   travel: {
     travel_id: null,
     user_id: null,
@@ -40,7 +43,7 @@ const initialState = {
 
 // 여행 계획 정보 들고오기
 export const getTravelInfo = info => dispatch => {
-  dispatch({ type: GET_POST_PENDING });
+  dispatch({ type: PENDING });
 
   return axios
     .get(
@@ -51,15 +54,15 @@ export const getTravelInfo = info => dispatch => {
     )
     .then(respone => {
       dispatch({
-        type: GET_POST_SUCCESS,
-        eventNm: 'getTravelInfo',
+        type: SUCCESS,
+        eventNm: 'GET_TRAVEL_INFO',
         payload: respone
       });
     })
     .catch(error => {
       dispatch({
-        type: GET_POST_FAILURE,
-        eventNm: 'getTravelInfo',
+        type: FAILURE,
+        eventNm: 'GET_TRAVEL_INFO',
         payload: error
       });
     });
@@ -67,10 +70,10 @@ export const getTravelInfo = info => dispatch => {
 
 // 여행 계획 업데이트
 export const saveTravelList = travel => dispatch => {
-  dispatch({ type: GET_POST_PENDING });
+  dispatch({ type: PENDING });
 
   return axios
-    .post(
+    .put(
       'http://localhost:4000/travels/update/' +
         travel.user_id +
         '/' +
@@ -86,15 +89,15 @@ export const saveTravelList = travel => dispatch => {
     )
     .then(respone => {
       dispatch({
-        type: GET_POST_SUCCESS,
-        eventNm: 'saveTravelList',
+        type: SUCCESS,
+        eventNm: 'SAVE_TRAVEL_LIST',
         payload: respone
       });
     })
     .catch(error => {
       dispatch({
-        type: GET_POST_FAILURE,
-        eventNm: 'saveTravelList',
+        type: FAILURE,
+        eventNm: 'SAVE_TRAVEL_LIST',
         payload: error
       });
     });
@@ -103,43 +106,44 @@ export const saveTravelList = travel => dispatch => {
 export default handleActions(
   {
     // 여행 타이틀 변경
-    [EDITTITLE]: (state, action) => {
-      return { ...state, travel: { ...state.travel, title: action.payload } };
+    [EDIT_TITLE]: (state, action) => {
+      return {
+        ...state,
+        bEventNm: state.nEventNm,
+        nEventNm: EDIT_TITLE,
+        status: 'SUCCESS',
+        travel: { ...state.travel, title: action.payload }
+      };
     },
 
     // 여행 시작일자 변경
-    [EDITSDATE]: (state, action) => {
+    [EDIT_SDATE]: (state, action) => {
       // 여행 마지막 날짜 계산
       // 일자 변경 시 날짜 차이 계산
       let day = state.travel.day;
-      const bDate = moment(action.payload, 'YYYY-MM-DD').diff(
-        state.travel.sDate,
-        'days'
-      );
-      const eDate = moment(state.travel.eDate)
-        .add(bDate, 'days')
-        .format('YYYY-MM-DD');
 
-      // 날짜 차이가 난 만큼 각각 일자에 대해 계산
       for (let i = 0; i < day.length; i++) {
-        day[i].date = moment(day[i].date)
-          .add(bDate, 'days')
+        day[i].date = moment(action.payload)
+          .add(i, 'days')
           .format('YYYY-MM-DD');
       }
 
       return {
         ...state,
+        bEventNm: state.nEventNm,
+        nEventNm: EDIT_SDATE,
+        status: 'SUCCESS',
         travel: {
           ...state.travel,
           sDate: action.payload,
-          eDate: eDate,
+          eDate: day[day.length - 1].date,
           day: day
         }
       };
     },
 
     // 여행 일정 추가
-    [ADDSCHEDULE]: (state, action) => {
+    [ADD_SCHEDULE]: (state, action) => {
       let id = 1;
       if (state.travel.day.length === 0) {
         id = 1;
@@ -148,6 +152,9 @@ export default handleActions(
       }
       return {
         ...state,
+        bEventNm: state.nEventNm,
+        nEventNm: ADD_SCHEDULE,
+        status: 'SUCCESS',
         travel: {
           ...state.travel,
           eDate: moment(state.travel.sDate)
@@ -168,7 +175,7 @@ export default handleActions(
     },
 
     // 여행 일정 삭제
-    [DELSCHEDULE]: (state, action) => {
+    [DEL_SCHEDULE]: (state, action) => {
       let day = state.travel.day;
       // 선택한 여행일정 삭제
       day.splice(
@@ -189,36 +196,60 @@ export default handleActions(
           .format('YYYY-MM-DD');
       }
 
-      return { ...state, travel: { ...state.travel, eDate: eDate, day: day } };
-    },
-
-    [GET_POST_PENDING]: (state, action) => {
       return {
         ...state,
-        status: 'pending'
+        bEventNm: state.nEventNm,
+        nEventNm: DEL_SCHEDULE,
+        status: 'SUCCESS',
+        travel: { ...state.travel, eDate: eDate, day: day }
       };
     },
-    [GET_POST_SUCCESS]: (state, action) => {
+
+    // 아무 정보가 없는 여행계획의 id 설정
+    [SET_ID]: (state, action) => {
+      return {
+        ...state,
+        bEventNm: state.nEventNm,
+        nEventNm: SET_ID,
+        status: 'SUCCESS',
+        travel: {
+          ...state.travel,
+          travel_id: action.payload.travel_id,
+          user_id: action.payload.user_id
+        }
+      };
+    },
+
+    [PENDING]: (state, action) => {
+      return {
+        ...state,
+        status: 'PENDING'
+      };
+    },
+    [SUCCESS]: (state, action) => {
       if (action.payload.data) {
         return {
           ...state,
-          status: 'success',
-          travel: action.payload.data,
-          eventNm: action.eventNm
+          bEventNm: state.nEventNm,
+          nEventNm: action.eventNm,
+          status: 'SUCCESS',
+          travel: action.payload.data
         };
       } else {
         return {
           ...state,
-          status: 'success',
-          eventNm: action.eventNm
+          status: 'SUCCESS',
+          bEventNm: state.nEventNm,
+          nEventNm: action.eventNm
         };
       }
     },
-    [GET_POST_FAILURE]: (state, action) => {
+    [FAILURE]: (state, action) => {
       return {
         ...state,
-        status: 'error',
-        eventNm: action.eventNm
+        status: 'ERROR',
+        bEventNm: state.nEventNm,
+        nEventNm: action.eventNm
       };
     }
   },

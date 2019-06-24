@@ -27,56 +27,102 @@ app.get('/selectAll/:listName/:user_id', function(req, res) {
     query = { user_id: { $ne: req.params.user_id } };
   }
 
-  User.findOne(query, function(err, user) {
-    if (err) return res.status(500).send('User 조회 실패');
-    if (!user) return res.status(404).send('User 없음.');
+  User.where(query)
+    .select('travel')
+    .find(function(err, user) {
+      if (err) return res.status(500).send('Area 조회 실패');
+      if (!user) return res.status(404).send('Area 없음.');
 
-    res.status(200).send(user);
-  });
+      let travel = [];
+
+      for (let i = 0; i < user.length; i++) {
+        for (let j = 0; j < user[i].travel.length; j++) {
+          travel.push({
+            travel_id: user[i].travel[j].travel_id,
+            user_id: user[i].travel[j].user_id,
+            sDate: user[i].travel[j].sDate,
+            eDate: user[i].travel[j].eDate,
+            title: user[i].travel[j].title
+          });
+        }
+      }
+
+      const result = { travel: travel };
+
+      res.status(200).send(result);
+    });
 });
 
 // 특정 여행계획 조회
 app.get('/select/:user_id/:travel_id', function(req, res) {
-  User.findOne(
-    {
-      user_id: req.params.user_id,
-      travel: {
-        $elemMatch: { travel_id: req.params.travel_id }
-      }
-    },
-    function(err, user) {
-      if (err) return res.status(500).send('Travel 조회 실패');
-      if (!user) return res.status(404).send('Travel 없음.');
+  const query = {
+    user_id: req.params.user_id,
+    'travel.travel_id': req.params.travel_id
+  };
 
-      res.status(200).send(user.travel[0]);
-    }
-  );
+  User.findOne(query, function(err, user) {
+    if (err) return res.status(500).send('Travel 조회 실패');
+    if (!user) return res.status(200).send(null);
+
+    let travel = user.travel.find(travel => {
+      return (
+        travel.user_id === req.params.user_id &&
+        travel.travel_id === parseInt(req.params.travel_id)
+      );
+    });
+
+    res.status(200).send(travel);
+  });
 });
 
 // 여행 계획 업데이트
-app.post('/update/:user_id/:travel_id', function(req, res) {
-  User.updateOne(
-    {
-      user_id: req.params.user_id,
-      travel: {
-        $elemMatch: { travel_id: req.params.travel_id }
-      }
-    },
-    {
-      $set: {
-        'travel.$.title': req.body.params.title,
-        'travel.$.sDate': req.body.params.sDate,
-        'travel.$.eDate': req.body.params.eDate,
-        'travel.$.day': req.body.params.day
-      }
-    },
-    function(err, user) {
-      if (err) return res.status(500).send('User 조회 실패');
-      if (!user) return res.status(404).send('User 없음.');
+app.put('/update/:user_id/:travel_id', function(req, res) {
+  const query = {
+    user_id: req.params.user_id
+  };
 
-      res.status(200).send(user);
+  User.findOne(query, function(err, user) {
+    if (err) return res.status(500).send('Travel 조회 실패');
+
+    // 저장될 여행 계획의 travel_id와 동일한 travel_id가 있는지 확인
+    const travelInfo = user.travel.find(travel => {
+      return travel.travel_id === parseInt(req.params.travel_id);
+    });
+
+    if (travelInfo === undefined) {
+      // 동일한 travel_id가 없을 경우 insert됩니다.
+      user.travel.push({
+        travel_id: req.params.travel_id,
+        user_id: req.params.user_id,
+        sDate: req.body.params.sDate,
+        eDate: req.body.params.eDate,
+        title: req.body.params.title,
+        day: req.body.params.day
+      });
+    } else {
+      // 동일한 travel_id가 있을 경우 update됩니다.
+      const idx = user.travel.indexOf(travelInfo);
+
+      user.travel[idx].sDate = req.body.params.sDate;
+      user.travel[idx].eDate = req.body.params.eDate;
+      user.travel[idx].title = req.body.params.title;
+      user.travel[idx].day = req.body.params.day;
     }
-  );
+
+    User.updateOne(query, { $set: { travel: user.travel } }, function(
+      err,
+      result
+    ) {
+      if (err) return res.status(500).send('User 조회 실패');
+      if (!result) return res.status(404).send('User 없음.');
+
+      const travelInfo = user.travel.find(travel => {
+        return travel.travel_id === parseInt(req.params.travel_id);
+      });
+
+      res.status(200).send(travelInfo);
+    });
+  });
 });
 
 // 여행일정 추가 test
@@ -102,23 +148,6 @@ app.post('/insert', function(req, res) {
   //     res.status(200).send(user);
   //   }
   // );
-});
-
-// 여행일정 수정
-
-// 여행일정 삭제
-
-// test
-app.put('/:user_id/:tst', function(req, res) {
-  User.findByIdAndUpdate(
-    req.params.user_id,
-    { $set: { travel: req.query } },
-    { new: true },
-    function(err, user) {
-      if (err) return res.status(500).send('User 수정 실패.');
-      res.status(200).send(user);
-    }
-  );
 });
 
 module.exports = app;

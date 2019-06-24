@@ -3,16 +3,17 @@ import axios from 'axios';
 import moment from 'moment';
 
 //액션 타입 정의
-const GET_POST_PENDING = 'GET_POST_AREA_PENDING';
-const GET_POST_SUCCESS = 'GET_POST_AREA_SUCCESS';
-const GET_POST_FAILURE = 'GET_POST_AREA_FAILURE';
+const PENDING = 'DAY_PENDING';
+const SUCCESS = 'DAY_SUCCESS';
+const FAILURE = 'DAY_FAILURE';
 
 //액션 생성 함수 만들기
 
 //모듈 초기상태 정의
 const initialState = {
-  eventNm: null,
-  status: 'pending',
+  status: 'PENDING',
+  bEventNm: null,
+  nEventNm: null,
   day: {
     day_id: null,
     title: null,
@@ -23,7 +24,7 @@ const initialState = {
 
 // 여행 하루 일정에 대한 모든 지역 들고오기
 export const getAreaList = info => dispatch => {
-  dispatch({ type: GET_POST_PENDING });
+  dispatch({ type: PENDING });
 
   return axios
     .get(
@@ -36,15 +37,15 @@ export const getAreaList = info => dispatch => {
     )
     .then(respone => {
       dispatch({
-        type: GET_POST_SUCCESS,
-        eventNm: 'getAreaList',
+        type: SUCCESS,
+        eventNm: 'GET_AREA_LIST',
         payload: respone
       });
     })
     .catch(error => {
       dispatch({
-        type: GET_POST_FAILURE,
-        eventNm: 'getAreaList',
+        type: FAILURE,
+        eventNm: 'GET_AREA_LIST',
         payload: error
       });
     });
@@ -52,33 +53,36 @@ export const getAreaList = info => dispatch => {
 
 export default handleActions(
   {
-    [GET_POST_PENDING]: (state, action) => {
+    [PENDING]: (state, action) => {
       return {
         ...state,
-        status: 'pending'
+        status: 'PENDING'
       };
     },
-    [GET_POST_SUCCESS]: (state, action) => {
+    [SUCCESS]: (state, action) => {
       if (action.payload.data) {
         return {
           ...state,
-          status: 'success',
+          status: 'SUCCESS',
           day: action.payload.data,
-          eventNm: action.eventNm
+          bEventNm: state.nEventNm,
+          nEventNm: action.eventNm
         };
       } else {
         return {
           ...state,
-          status: 'success',
-          eventNm: action.eventNm
+          status: 'SUCCESS',
+          bEventNm: state.nEventNm,
+          nEventNm: action.eventNm
         };
       }
     },
-    [GET_POST_FAILURE]: (state, action) => {
+    [FAILURE]: (state, action) => {
       return {
         ...state,
-        status: 'error',
-        eventNm: action.eventNm
+        status: 'ERROR',
+        bEventNm: state.nEventNm,
+        nEventNm: action.eventNm
       };
     }
   },

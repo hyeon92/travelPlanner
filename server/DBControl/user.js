@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
   user_id: String, // 회원 id
   password: String, // 회원 비밀번호
   name: String, // 회원 이름
   travel: [
     {
-      _id: mongoose.Schema.Types.ObjectId,
       travel_id: Number, // travel 고유키
       user_id: String, // 회원 id
       sDate: Date, // 여행 시작일자
@@ -14,13 +12,11 @@ const UserSchema = new mongoose.Schema({
       title: String, // 여행 제목
       day: [
         {
-          _id: mongoose.Schema.Types.ObjectId,
           day_id: Number, // day 고유키
           date: Date, // 일자
           title: String, // 일차 제목
           area: [
             {
-              _id: mongoose.Schema.Types.ObjectId,
               area_id: Number, // area 고유키
               place_name: String, // 장소명
               category: String, // 장소 카테고리

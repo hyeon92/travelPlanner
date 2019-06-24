@@ -1,15 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Layout,
-  Icon,
-  List,
-  Avatar,
-  DatePicker,
-  Input,
-  Button,
-  Typography
-} from 'antd';
+import { Layout, Icon, List, Avatar, DatePicker, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 import moment from 'moment';
 
