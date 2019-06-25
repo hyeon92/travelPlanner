@@ -1,26 +1,14 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const app = express();
 app.use(express.json());
 
-app.use(cookieParser());
-app.use(
-  session({
-    key: 'sid',
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 24000 * 60 * 60 // 쿠키 유효기간 24시간
-    }
-  })
-);
 const User = require('./User');
 
-// 특정회원 여행계획 리스트 조회
+// 여행 일정 가져오기
 app.get('/selectAll/:listName/:user_id', function(req, res) {
   let query = {};
+
+  // listName에 따라 자신의 여행일정을 들고 올지 자신 외의 여해일정을 들고 올 지 결정
   if (req.params.listName === 'MyList') {
     query = { user_id: req.params.user_id };
   } else {
@@ -53,7 +41,7 @@ app.get('/selectAll/:listName/:user_id', function(req, res) {
     });
 });
 
-// 특정 여행계획 조회
+// 1개의 여행계획 조회
 app.get('/select/:user_id/:travel_id', function(req, res) {
   const query = {
     user_id: req.params.user_id,
@@ -124,9 +112,12 @@ app.put('/update/:user_id/:travel_id', function(req, res) {
     });
   });
 });
+// ------------------------------------------
+// ------------------------------------------
 
 // 여행일정 추가 test
 app.post('/insert', function(req, res) {
+  console.log('/insert');
   User.updateOne(
     { user_id: 123, travel: [{ title: '11' }] },
     { travel: { title: '1111' } },

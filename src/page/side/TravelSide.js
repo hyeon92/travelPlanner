@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Layout, Icon, List, Avatar, DatePicker, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 import moment from 'moment';
@@ -80,33 +79,34 @@ const TravelSide = ({
             </div>
           }
           renderItem={item => (
-            <Link to={`/MyList/${travelList.travel_id}/${item.day_id}`}>
-              <List.Item
-                style={{
-                  background: '#F0F1F7',
-                  borderRadius: '5px',
-                  marginTop: '5px',
-                  padding: '5px'
-                }}
-                extra={[
-                  <Icon
-                    type="delete"
-                    theme="twoTone"
-                    twoToneColor="#545871"
-                    onClick={() => onDelSchedule(item.day_id)}
-                  />
-                ]}
-              >
-                <List.Item.Meta
-                  onClick={() => onChangeDay(item.day_id)}
-                  avatar={
-                    <Avatar icon="pushpin" style={{ background: '#9597A6' }} />
-                  }
-                  title={item.title}
-                  description={moment(item.date).format('YYYY-MM-DD')}
+            <List.Item
+              style={{
+                background: '#F0F1F7',
+                borderRadius: '5px',
+                marginTop: '5px',
+                padding: '5px'
+              }}
+              extra={[
+                <Icon
+                  type="delete"
+                  theme="twoTone"
+                  twoToneColor="#545871"
+                  onClick={() => onDelSchedule(item.day_id)}
                 />
-              </List.Item>
-            </Link>
+              ]}
+            >
+              <List.Item.Meta
+                style={{
+                  cursor: 'Pointer'
+                }}
+                onClick={() => onChangeDay(item.day_id)}
+                avatar={
+                  <Avatar icon="pushpin" style={{ background: '#9597A6' }} />
+                }
+                title={item.title}
+                description={moment(item.date).format('YYYY-MM-DD')}
+              />
+            </List.Item>
           )}
         />
       </div>

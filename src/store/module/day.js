@@ -51,6 +51,37 @@ export const getAreaList = info => dispatch => {
     });
 };
 
+// 여행 일정 중 장소 제거
+export const delArea = info => dispatch => {
+  dispatch({ type: PENDING });
+
+  return axios
+    .put(
+      'http://localhost:4000/areas/delete/' +
+        info.user_id +
+        '/' +
+        info.travel_id +
+        '/' +
+        info.day_id +
+        '/' +
+        info.area_id
+    )
+    .then(respone => {
+      dispatch({
+        type: SUCCESS,
+        eventNm: 'DEL_AREA',
+        payload: respone
+      });
+    })
+    .catch(error => {
+      dispatch({
+        type: FAILURE,
+        eventNm: 'DEL_AREA',
+        payload: error
+      });
+    });
+};
+
 export default handleActions(
   {
     [PENDING]: (state, action) => {

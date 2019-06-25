@@ -64,24 +64,25 @@ class TravelContainer extends Component {
       tBEventNm,
       tNEventNm,
       dStatus,
-      dBEventNm,
       dNEventNm,
       day
     } = this.props;
+    const { travelActions } = this.props;
 
     // 사이드 메뉴의 저장버튼을 눌러 저장 후 성공여부에 따라 반응합니다.
     if (tNEventNm === 'SAVE_TRAVEL_LIST') {
       if (tBEventNm !== 'SAVE_TRAVEL_LIST' && tStatus === 'SUCCESS') {
-        alert('저장이 완료되었습니다.');
+        alert('여행 일정 저장이 완료되었습니다');
+        travelActions.clearEventNm();
       } else if (tStatus === 'ERROR') {
-        alert('저장 중 오류가 생겼습니다. 다시 시도해주십시오');
+        alert('여행 일정 저장 중 오류가 생겼습니다. 다시 시도해주십시오');
       }
     }
 
-    // 장소 정보를 가져온 후 성공여부에 따라
-    // 지도에 마커를 생성하고 지도 중앙에 모든 마커가 보일 수 있게 지도 중심이 이동합니다.
     if (dNEventNm === 'GET_AREA_LIST') {
-      if (dBEventNm !== 'GET_AREA_LIST' && dStatus === 'SUCCESS') {
+      // 장소 정보를 가져온 후 성공여부에 따라
+      // 지도에 마커를 생성하고 지도 중앙에 모든 마커가 보일 수 있게 지도 중심이 이동합니다.
+      if (dStatus === 'SUCCESS') {
         if (day.area.length === 0) {
           // 지역 정보가 하나도 없을 경우 마커 생성 및 지도 이동이 불필효합니다.
           for (let i = 0; i < this.state.markers.length; i++) {
@@ -161,8 +162,14 @@ class TravelContainer extends Component {
   // 사이드 메뉴의 여행 일정 삭제 버튼을 클릭하여 삭제합니다.
   handleDelSchedule = travel_id => {
     const { travelActions } = this.props;
+    const {
+      match: {
+        params: { list }
+      }
+    } = this.props;
 
     travelActions.delSchedule(travel_id);
+    this.props.history.push(`/${list}/${travel_id}/1`);
   };
 
   // 여행계획 저장 버튼을 클릭하여 저장합니다.
@@ -178,7 +185,7 @@ class TravelContainer extends Component {
     const { dayActions } = this.props;
     const {
       match: {
-        params: { travel_id }
+        params: { list, travel_id }
       }
     } = this.props;
 
@@ -192,11 +199,38 @@ class TravelContainer extends Component {
 
     // 장소 정보를 가져옵니다.
     dayActions.getAreaList(info);
+    this.props.history.push(`/${list}/${travel_id}/${e}`);
+  };
+
+  // 장소 정보를 수정하는 화면으로 이동합니다.
+  handleMoveArea = e => {
+    const {
+      match: {
+        params: { list, travel_id, day_id }
+      }
+    } = this.props;
+    this.props.history.push(`/${list}/${travel_id}/${day_id}/${e}`);
   };
 
   // 장소 삭제 버튼을 클릭하여 장소 정보를 삭제합니다.
   handleDelArea = e => {
-    console.log('handleDelArea');
+    const { dayActions } = this.props;
+    const {
+      match: {
+        params: { travel_id, day_id }
+      }
+    } = this.props;
+
+    // 장소 데이터를 삭제하기 위해 파라미터를 세팅합니다.
+    const info = {};
+    const userInfo = storage.get('userInfo');
+
+    info.user_id = userInfo.user_id;
+    info.travel_id = travel_id;
+    info.day_id = day_id;
+    info.area_id = e;
+
+    dayActions.delArea(info);
   };
 
   render() {
@@ -208,6 +242,7 @@ class TravelContainer extends Component {
       handleDelSchedule,
       handleSaveTravel,
       handleChangeDay,
+      handleMoveArea,
       handleDelArea
     } = this;
 
@@ -235,6 +270,7 @@ class TravelContainer extends Component {
           <Travel
             areaList={day}
             params={this.props.match.params}
+            onMoveArea={handleMoveArea}
             onDelArea={handleDelArea}
           />
         </div>

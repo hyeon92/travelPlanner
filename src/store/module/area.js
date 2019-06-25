@@ -84,7 +84,7 @@ export const saveArea = (areaInfo, idInfo) => dispatch => {
   dispatch({ type: PENDING });
 
   return axios
-    .post(
+    .put(
       'http://localhost:4000/areas/save/' +
         idInfo.user_id +
         '/' +

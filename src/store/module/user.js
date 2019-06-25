@@ -57,6 +57,9 @@ export const singin = user => dispatch => {
     });
 };
 
+// ------------------------------------------
+// ------------------------------------------
+
 // 회원가입
 export const signup = user => dispatch => {
   dispatch({ type: PENDING });

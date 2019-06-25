@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as travelActions from 'store/module/travel';
+import * as dayActions from 'store/module/day';
 import * as areaActions from 'store/module/area';
 import TravelDetail from 'page/TravelDetail';
 import TravelSide from 'page/side/TravelSide';
@@ -77,19 +78,30 @@ class TravelDetailContainer extends Component {
         );
 
         // 지도에서 저장한 위치로 이동합니다.
-        this.state.map.setLevel(3);
+        this.state.map.setLevel(5);
         this.state.map.panTo(moveLocation);
 
         // 저장한 위치에 마커와 말풍선을 추가합니다.
         addMarker(moveLocation, 0);
       }
-    } else if (aNEventNm === 'SAVE_TRAVEL_LIST') {
+    } else if (aNEventNm === 'SAVE_AREA_INFO') {
       // 장소 정보를 저장 후 성공여부에 따라 반응합니다.
-      if (aBEventNm !== 'SAVE_TRAVEL_LIST' && aStatus === 'SUCCESS') {
-        alert('저장이 완료되었습니다.');
+      if (aBEventNm !== 'SAVE_AREA_INFO' && aStatus === 'SUCCESS') {
+        alert('장소 정보 저장이 완료되었습니다.');
         this.props.history.push(`/${list}/${travel_id}/${day_id}`);
       } else if (aStatus === 'ERROR') {
-        alert('저장 중 오류가 발생하였습니다. 다시 시도해주시기 바랍니다.');
+        alert(
+          '장소 정보 저장 중 오류가 발생하였습니다. 다시 시도해주시기 바랍니다.'
+        );
+      }
+    } else if (aNEventNm === 'SAVE_TRAVEL_LIST') {
+      // 여행 일정 정보를 저장 후 성공여부에 따라 반응합니다.
+      if (aBEventNm !== 'SAVE_TRAVEL_LIST' && aStatus === 'SUCCESS') {
+        alert('여행 일정 저장이 완료되었습니다.');
+      } else if (aStatus === 'ERROR') {
+        alert(
+          '여행 일정 저장 중 오류가 발생하였습니다. 다시 시도해주시기 바랍니다.'
+        );
       }
     }
   }
@@ -224,7 +236,7 @@ class TravelDetailContainer extends Component {
 
         // 지도 중심을 부드럽게 이동시킵니다
         // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
-        this.state.map.setLevel(3);
+        this.state.map.setLevel(5);
         this.state.map.panTo(marker.getPosition());
 
         // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
@@ -267,7 +279,7 @@ class TravelDetailContainer extends Component {
 
         // 지도 중심을 부드럽게 이동시킵니다
         // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
-        this.state.map.setLevel(3);
+        this.state.map.setLevel(5);
         this.state.map.panTo(marker.getPosition());
 
         // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
@@ -483,7 +495,31 @@ class TravelDetailContainer extends Component {
       return false;
     }
 
-    // areaActions.saveArea(areaInfo, idInfo);
+    areaActions.saveArea(areaInfo, idInfo);
+  };
+
+  // 사이드 메뉴의 여행 일정을 클릭하여 해당 일정의 장소 정보를 보여줍니다.
+  handleChangeDay = e => {
+    const { dayActions } = this.props;
+    const {
+      match: {
+        params: { list, travel_id }
+      }
+    } = this.props;
+
+    // 장소 데이터를 가져오기 위해 파라미터를 세팅합니다.
+    const info = {};
+    const userInfo = storage.get('userInfo');
+
+    info.user_id = userInfo.user_id;
+    info.travel_id = travel_id;
+    info.day_id = e;
+
+    console.log(info);
+
+    // 장소 정보를 가져옵니다.
+    dayActions.getAreaList(info);
+    this.props.history.push(`/${list}/${travel_id}/${e}`);
   };
 
   render() {
@@ -503,7 +539,8 @@ class TravelDetailContainer extends Component {
       handleEditCost,
       handleEditStayTime,
       handleEditMemo,
-      handleSave
+      handleSave,
+      handleChangeDay
     } = this;
 
     return (
@@ -515,6 +552,7 @@ class TravelDetailContainer extends Component {
           onAddSchedule={handleAddSchedule}
           onDelSchedule={handleDelSchedule}
           onSaveTravel={handleSaveTravel}
+          onChangeDay={handleChangeDay}
         />
         <div
           style={{
@@ -572,6 +610,9 @@ class TravelDetailContainer extends Component {
 export default connect(
   state => ({
     travelList: state.travel.travel,
+    tStatus: state.travel.status,
+    tBEventNm: state.travel.bEventNm,
+    tNEventNm: state.area.nEventNm,
     areaInfo: state.area.area,
     aStatus: state.area.status,
     aBEventNm: state.area.bEventNm,
@@ -579,6 +620,7 @@ export default connect(
   }),
   dispatch => ({
     travelActions: bindActionCreators(travelActions, dispatch),
+    dayActions: bindActionCreators(dayActions, dispatch),
     areaActions: bindActionCreators(areaActions, dispatch)
   })
 )(TravelDetailContainer);

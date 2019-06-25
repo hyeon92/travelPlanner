@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { List, Avatar, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 
-const Travel = ({ areaList, params, onDelArea }) => {
+const Travel = ({ areaList, params, onMoveArea, onDelArea }) => {
   if (!areaList) {
     areaList = {
       day_id: null,
@@ -61,43 +61,41 @@ const Travel = ({ areaList, params, onDelArea }) => {
           </Link>
         }
         renderItem={item => (
-          <Link
-            to={`/${params.list}/${params.travel_id}/${params.day_id}/${
-              item.area_id
-            }`}
-          >
-            <List.Item
-              extra={[
-                <Icon
-                  type="delete"
-                  theme="twoTone"
-                  twoToneColor="#B8817D"
-                  onClick={() => onDelArea(item.area_id)}
-                  style={{ fontSize: '20px' }}
-                />
-              ]}
-              style={{
-                background: '#EBD0CE',
-                marginTop: '5px',
-                paddingLeft: '10px',
-                paddingRight: '20px',
-                border: '1px solid #DADBE6',
-                borderRadius: '10px'
-              }}
-            >
-              <List.Item.Meta
-                avatar={
-                  <Avatar
-                    icon="check-square"
-                    theme="twoTone"
-                    style={{ background: '#B8817D' }}
-                  />
-                }
-                title={item.place_name}
-                description={item.memo}
+          <List.Item
+            extra={[
+              <Icon
+                type="delete"
+                theme="twoTone"
+                twoToneColor="#B8817D"
+                onClick={() => onDelArea(item.area_id)}
+                style={{ fontSize: '20px' }}
               />
-            </List.Item>
-          </Link>
+            ]}
+            style={{
+              background: '#EBD0CE',
+              marginTop: '5px',
+              paddingLeft: '10px',
+              paddingRight: '20px',
+              border: '1px solid #DADBE6',
+              borderRadius: '10px'
+            }}
+          >
+            <List.Item.Meta
+              style={{
+                cursor: 'Pointer'
+              }}
+              avatar={
+                <Avatar
+                  icon="check-square"
+                  theme="twoTone"
+                  style={{ background: '#B8817D' }}
+                />
+              }
+              title={item.place_name}
+              description={item.memo}
+              onClick={() => onMoveArea(item.area_id)}
+            />
+          </List.Item>
         )}
       />
     </Fragment>

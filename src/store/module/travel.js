@@ -12,6 +12,7 @@ const EDIT_SDATE = 'EDIT_SDATE';
 const ADD_SCHEDULE = 'ADD_SCHEDULE';
 const DEL_SCHEDULE = 'DEL_SCHEDULE';
 const SET_ID = 'SET_ID';
+const CLEAR_EVENT_NM = 'CLEAR_EVENT_NM';
 
 //액션 생성 함수 만들기
 export const editTitle = createAction(EDIT_TITLE);
@@ -19,6 +20,7 @@ export const editsDate = createAction(EDIT_SDATE);
 export const addSchedule = createAction(ADD_SCHEDULE);
 export const delSchedule = createAction(DEL_SCHEDULE);
 export const setId = createAction(SET_ID);
+export const clearEventNm = createAction(CLEAR_EVENT_NM);
 
 //모듈 초기상태 정의
 const initialState = {
@@ -217,6 +219,16 @@ export default handleActions(
           travel_id: action.payload.travel_id,
           user_id: action.payload.user_id
         }
+      };
+    },
+
+    // 이벤트 이름 초기화
+    [CLEAR_EVENT_NM]: (state, action) => {
+      return {
+        ...state,
+        bEventNm: state.nEventNm,
+        nEventNm: null,
+        status: 'SUCCESS'
       };
     },
 
