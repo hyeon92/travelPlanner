@@ -112,33 +112,5 @@ app.put('/update/:user_id/:travel_id', function(req, res) {
     });
   });
 });
-// ------------------------------------------
-// ------------------------------------------
-
-// 여행일정 추가 test
-app.post('/insert', function(req, res) {
-  console.log('/insert');
-  User.updateOne(
-    { user_id: 123, travel: [{ title: '11' }] },
-    { travel: { title: '1111' } },
-    function(err, user) {
-      if (err) return res.status(500).send('User 조회 실패');
-      if (!user) return res.status(404).send('User 없음.');
-
-      res.status(200).send(user);
-    }
-  );
-  // User.create(
-  //   {
-  //     user_id: req.body.params.user_id,
-  //     password: req.body.params.password,
-  //     name: req.body.params.name
-  //   },
-  //   function(err, user) {
-  //     if (err) return res.status(500).send('User 생성 실패.');
-  //     res.status(200).send(user);
-  //   }
-  // );
-});
 
 module.exports = app;

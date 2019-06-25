@@ -47,31 +47,36 @@ app.get('/selectArea/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
 
   User.findOne(query, function(err, user) {
     if (err) return res.status(500).send('Area 조회 실패');
-    if (!user) return res.status(404).send('Area 없음.');
+    // if (!user) return res.status(404).send('Area 없음.');
 
-    // 유저ID와 여행계획key 필터
-    const travel = user.travel.find(travel => {
-      return (
-        travel.user_id === req.params.user_id &&
-        travel.travel_id === parseInt(req.params.travel_id)
-      );
-    });
+    if (user) {
+      // 유저ID와 여행계획key 필터
+      const travel = user.travel.find(travel => {
+        return (
+          travel.user_id === req.params.user_id &&
+          travel.travel_id === parseInt(req.params.travel_id)
+        );
+      });
 
-    // 여행일정 id 필터
-    const day = travel.day.find(day => {
-      return day.day_id === parseInt(req.params.day_id);
-    });
+      // 여행일정 id 필터
+      const day = travel.day.find(day => {
+        return day.day_id === parseInt(req.params.day_id);
+      });
 
-    // 지역 id 필터
-    let area = day.area.find(area => {
-      return area.area_id === parseInt(req.params.area_id);
-    });
+      // 지역 id 필터
+      let area = day.area.find(area => {
+        return area.area_id === parseInt(req.params.area_id);
+      });
 
-    if (area === undefined) {
-      area = { area_id: req.params.area_id };
+      if (area === undefined) {
+        area = { area_id: req.params.area_id };
+      }
+      res.status(200).send(area);
+    } else {
+      const area = { area_id: req.params.area_id };
+
+      res.status(200).send(area);
     }
-
-    res.status(200).send(area);
   });
 });
 
@@ -177,26 +182,6 @@ app.put('/delete/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
         res.status(200).send(user.travel[travel_idx].day[day_idx]);
       }
     );
-
-    // res.status(400).send('ㅎㅎ');
-
-    // if (area === undefined) {
-    //   // 동일한 장소 정보가 없을 경우 Insert됩니다.
-    //   user.travel[travel_idx].day[day_idx].area.push(req.body.params);
-    // } else {
-    //   // 동일한 장소 정보가 있을 경우 Update됩니다.
-    //   user.travel[travel_idx].day[day_idx].area[area_idx] = req.body.params;
-    // }
-
-    // User.updateOne(query, { $set: { travel: user.travel } }, function(
-    //   err,
-    //   result
-    // ) {
-    //   if (err) return res.status(500).send('User 조회 실패');
-    //   if (!result) return res.status(404).send('User 없음.');
-
-    //   res.status(200).send(req.body.params);
-    // });
   });
 });
 

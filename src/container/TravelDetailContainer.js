@@ -515,8 +515,6 @@ class TravelDetailContainer extends Component {
     info.travel_id = travel_id;
     info.day_id = e;
 
-    console.log(info);
-
     // 장소 정보를 가져옵니다.
     dayActions.getAreaList(info);
     this.props.history.push(`/${list}/${travel_id}/${e}`);
