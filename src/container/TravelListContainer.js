@@ -35,9 +35,26 @@ class TravelListContainer extends Component {
     // listName에 따라 본인 또는 본인이 아닌 다른사람들의 여행정보를 가져옵니다.
     userActions.getTravelList(info);
   };
+
+  // 여행 계획 클릭 시 해당 여행일정의 유저 id를 저장후 이동합니다.
+  handleMoveTravel = e => {
+    const {
+      match: {
+        params: { list }
+      }
+    } = this.props;
+
+    //세션에 여행 일정의 정보를 저장합니다.
+    storage.set('travelInfo', {
+      user_id: e.user_id
+    });
+
+    // 선택한 여행 계획일정으로 이동합니다.
+    this.props.history.push(`/${list}/${e.travel_id}/1`);
+  };
   render() {
     const { user } = this.props;
-    const { handlegetTravelList } = this;
+    const { handlegetTravelList, handleMoveTravel } = this;
 
     const params = this.props.match.params;
 
@@ -52,7 +69,11 @@ class TravelListContainer extends Component {
             minHeight: 1000
           }}
         >
-          <TravelList travelList={user} params={params} />
+          <TravelList
+            travelList={user}
+            params={params}
+            onMoveTravel={handleMoveTravel}
+          />
         </div>
       </Fragment>
     );

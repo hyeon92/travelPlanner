@@ -3,7 +3,7 @@ import { List, Card, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
-const TravelList = ({ travelList, params }) => {
+const TravelList = ({ travelList, params, onMoveTravel }) => {
   // 새로운 여행 등록 시 id 지정
   let nextId;
 
@@ -31,22 +31,26 @@ const TravelList = ({ travelList, params }) => {
       }
       renderItem={item => (
         <List.Item>
-          <Link to={`/${params.list}/${item.travel_id}/1`}>
-            <Card
-              hoverable
-              style={{ width: 240 }}
-              cover={<img alt="example" src="https://bit.ly/2IQyAci" />}
-            >
-              <Card.Meta
-                title={item.title}
-                description={
-                  moment(item.sDate).format('YYYY-MM-DD') +
-                  ' ~ ' +
-                  moment(item.eDate).format('YYYY-MM-DD')
-                }
+          <Card
+            hoverable
+            style={{ width: 240 }}
+            cover={
+              <img
+                alt="example"
+                src="https://bit.ly/2IQyAci"
+                onClick={() => onMoveTravel(item)}
               />
-            </Card>
-          </Link>
+            }
+          >
+            <Card.Meta
+              title={item.title}
+              description={
+                moment(item.sDate).format('YYYY-MM-DD') +
+                ' ~ ' +
+                moment(item.eDate).format('YYYY-MM-DD')
+              }
+            />
+          </Card>
         </List.Item>
       )}
     />

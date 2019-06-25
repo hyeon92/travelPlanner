@@ -16,9 +16,11 @@ class TravelContainer extends Component {
       markers: [], // 마커를 저장하는 배열입니다.
       infoWindows: [] // 마커의 말풍선을 저장하는 배열입니다.
     };
+    let visible = false;
   }
 
   componentDidMount() {
+    const { visible } = this;
     const { travelList } = this.props;
     const { dayActions, travelActions } = this.props;
     const {
@@ -29,9 +31,15 @@ class TravelContainer extends Component {
 
     // 데이터를 가져오기 위해 파라미터를 세팅합니다
     const info = {};
+    const travelInfo = storage.get('travelInfo');
     const userInfo = storage.get('userInfo');
 
-    info.user_id = userInfo.user_id;
+    // 로그인 한 회원의 아이디와 일정을 작성한 회원의 아이디가 동일한 경우
+    if (travelInfo.user_id === userInfo.user_id) {
+      visible = true;
+    }
+
+    info.user_id = travelInfo.user_id;
     info.travel_id = travel_id;
     info.day_id = day_id;
 
@@ -191,9 +199,9 @@ class TravelContainer extends Component {
 
     // 장소 데이터를 가져오기 위해 파라미터를 세팅합니다.
     const info = {};
-    const userInfo = storage.get('userInfo');
+    const travelInfo = storage.get('travelInfo');
 
-    info.user_id = userInfo.user_id;
+    info.user_id = travelInfo.user_id;
     info.travel_id = travel_id;
     info.day_id = e;
 
@@ -234,6 +242,7 @@ class TravelContainer extends Component {
   };
 
   render() {
+    const { visible } = this;
     const { travelList, day } = this.props;
     const {
       handleEditTitle,
@@ -249,6 +258,7 @@ class TravelContainer extends Component {
     return (
       <Fragment>
         <TravelSide
+          visible={visible}
           travelList={travelList}
           onEditTitle={handleEditTitle}
           onEditsDate={handleEditsDate}
@@ -268,6 +278,7 @@ class TravelContainer extends Component {
           <div id="map" style={{ height: 300 }} />
 
           <Travel
+            visible={visible}
             areaList={day}
             params={this.props.match.params}
             onMoveArea={handleMoveArea}

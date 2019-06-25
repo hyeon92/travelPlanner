@@ -4,6 +4,7 @@ import 'antd/dist/antd.css';
 import moment from 'moment';
 
 const TravelSide = ({
+  visible,
   travelList,
   onEditTitle,
   onEditsDate,
@@ -33,50 +34,87 @@ const TravelSide = ({
         padding: '5px'
       }}
     >
-      <Input
-        style={{ width: '100%' }}
-        value={travelList.title}
-        placeholder="여행제목"
-        onChange={onEditTitle}
-      />
+      {visible ? (
+        <Input
+          style={{ width: '100%' }}
+          value={travelList.title}
+          placeholder="여행제목"
+          onChange={onEditTitle}
+        />
+      ) : (
+        <span
+          style={{
+            color: '#F0F1F7',
+            fontWeight: 'bold',
+            fontSize: '17px',
+            width: '100%',
+            textAlign: 'center'
+          }}
+        >
+          {travelList.title}
+        </span>
+      )}
       <div style={{ marginTop: '20px' }}>
         <span style={{ color: '#F0F1F7', fontWeight: 'bold' }}> 시작일자 </span>
-        <DatePicker
-          style={{ width: '70%', marginBottom: '5px' }}
-          placeholder="Start"
-          format="YYYY-MM-DD"
-          allowClear={false}
-          value={moment(travelList.sDate)}
-          onChange={onEditsDate}
-        />
+        {visible ? (
+          <DatePicker
+            style={{ width: '70%', marginBottom: '5px' }}
+            placeholder="Start"
+            format="YYYY-MM-DD"
+            allowClear={false}
+            value={moment(travelList.sDate)}
+            onChange={onEditsDate}
+          />
+        ) : (
+          <span
+            style={{ color: '#F0F1F7', fontWeight: 'bold', fontSize: '17px' }}
+          >
+            {moment(travelList.sDate).format('YYYY-MM-DD')}
+            <br />
+          </span>
+        )}
         <span style={{ color: '#F0F1F7', fontWeight: 'bold' }}> 종료일자 </span>
-        <DatePicker
-          style={{ width: '70%' }}
-          disabled
-          placeholder="End"
-          format="YYYY-MM-DD"
-          allowClear={false}
-          value={moment(travelList.eDate)}
-        />
+
+        {visible ? (
+          <DatePicker
+            style={{ width: '70%' }}
+            disabled
+            placeholder="End"
+            format="YYYY-MM-DD"
+            allowClear={false}
+            value={moment(travelList.eDate)}
+          />
+        ) : (
+          <span
+            style={{ color: '#F0F1F7', fontWeight: 'bold', fontSize: '17px' }}
+          >
+            {moment(travelList.eDate).format('YYYY-MM-DD')}
+            <br />
+          </span>
+        )}
       </div>
       <div style={{ marginTop: '20px' }}>
         <List
           dataSource={travelList.day}
           footer={
-            <div
-              onClick={onAddSchedule}
-              style={{
-                cursor: 'Pointer',
-                background: '#DADBE6',
-                height: '40px',
-                lineHeight: '40px',
-                paddingLeft: '5px',
-                borderRadius: '5px'
-              }}
-            >
-              <Icon type="plus" />
-              <span> ADD </span>
-            </div>
+            visible ? (
+              <div
+                onClick={onAddSchedule}
+                style={{
+                  cursor: 'Pointer',
+                  background: '#DADBE6',
+                  height: '40px',
+                  lineHeight: '40px',
+                  paddingLeft: '5px',
+                  borderRadius: '5px'
+                }}
+              >
+                <Icon type="plus" />
+                <span> ADD </span>
+              </div>
+            ) : (
+              <div />
+            )
           }
           renderItem={item => (
             <List.Item
@@ -86,14 +124,18 @@ const TravelSide = ({
                 marginTop: '5px',
                 padding: '5px'
               }}
-              extra={[
-                <Icon
-                  type="delete"
-                  theme="twoTone"
-                  twoToneColor="#545871"
-                  onClick={() => onDelSchedule(item.day_id)}
-                />
-              ]}
+              extra={
+                visible ? (
+                  <Icon
+                    type="delete"
+                    theme="twoTone"
+                    twoToneColor="#545871"
+                    onClick={() => onDelSchedule(item.day_id)}
+                  />
+                ) : (
+                  <div />
+                )
+              }
             >
               <List.Item.Meta
                 style={{
@@ -110,12 +152,16 @@ const TravelSide = ({
           )}
         />
       </div>
-      <Button
-        onClick={onSaveTravel}
-        style={{ width: '100%', background: '#9597A6' }}
-      >
-        저장
-      </Button>
+      {visible ? (
+        <Button
+          onClick={onSaveTravel}
+          style={{ width: '100%', background: '#9597A6' }}
+        >
+          저장
+        </Button>
+      ) : (
+        <div />
+      )}
     </Layout.Sider>
   );
 };

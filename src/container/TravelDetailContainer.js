@@ -19,9 +19,11 @@ class TravelDetailContainer extends Component {
       markers: [], // 마커들을 저장하는 배열입니다.
       selectedMarker: null // 선택되어진 마커입니다.
     };
+    let visible = false;
   }
 
   componentDidMount() {
+    const { visible } = this;
     const { areaActions, travelActions } = this.props;
     const { travelList } = this.props;
     const {
@@ -32,9 +34,15 @@ class TravelDetailContainer extends Component {
 
     // 데이터를 가져오기 위해 파라미터를 세팅합니다.
     const info = {};
+    const travelInfo = storage.get('travelInfo');
     const userInfo = storage.get('userInfo');
 
-    info.user_id = userInfo.user_id;
+    // 로그인 한 회원의 아이디와 일정을 작성한 회원의 아이디가 동일한 경우
+    if (travelInfo.user_id === userInfo.user_id) {
+      visible = true;
+    }
+
+    info.user_id = travelInfo.user_id;
     info.travel_id = travel_id;
     info.day_id = day_id;
     info.area_id = area_id;
@@ -509,9 +517,9 @@ class TravelDetailContainer extends Component {
 
     // 장소 데이터를 가져오기 위해 파라미터를 세팅합니다.
     const info = {};
-    const userInfo = storage.get('userInfo');
+    const travelInfo = storage.get('travelInfo');
 
-    info.user_id = userInfo.user_id;
+    info.user_id = travelInfo.user_id;
     info.travel_id = travel_id;
     info.day_id = e;
 
@@ -521,6 +529,7 @@ class TravelDetailContainer extends Component {
   };
 
   render() {
+    const { visible } = this;
     const { travelList, areaInfo } = this.props;
     const {
       handleEditTitle,
@@ -544,6 +553,7 @@ class TravelDetailContainer extends Component {
     return (
       <Fragment>
         <TravelSide
+          visible={visible}
           travelList={travelList}
           onEditTitle={handleEditTitle}
           onEditsDate={handleEditsDate}
@@ -569,26 +579,30 @@ class TravelDetailContainer extends Component {
                 overflow: 'hidden'
               }}
             />
-
-            <div id="menu_wrap" className="bg_white">
-              <div className="option">
-                <div>
-                  키워드 :{' '}
-                  <input
-                    type="text"
-                    id="keyword"
-                    size="15"
-                    onKeyPress={handlePressEnter}
-                  />
-                  <button onClick={handleSearchPlaces}>검색하기</button>
+            {visible ? (
+              <div id="menu_wrap" className="bg_white">
+                <div className="option">
+                  <div>
+                    키워드 :{' '}
+                    <input
+                      type="text"
+                      id="keyword"
+                      size="15"
+                      onKeyPress={handlePressEnter}
+                    />
+                    <button onClick={handleSearchPlaces}>검색하기</button>
+                  </div>
                 </div>
+                <hr />
+                <ul id="placesList" />
+                <div id="pagination" />
               </div>
-              <hr />
-              <ul id="placesList" />
-              <div id="pagination" />
-            </div>
+            ) : (
+              <div />
+            )}
           </div>
           <TravelDetail
+            visible={visible}
             areaInfo={areaInfo}
             onEditTime={handleEditTime}
             onEditTransport={handleEditTransport}

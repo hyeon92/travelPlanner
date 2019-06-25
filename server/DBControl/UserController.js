@@ -28,16 +28,4 @@ app.post('/insert', function(req, res) {
   });
 });
 
-// ------------------------------------------
-// ------------------------------------------
-
-// 회원 전체조회
-app.get('/selectAll', function(req, res) {
-  console.log('selectAll');
-  User.find({}, function(err, users) {
-    if (err) return res.status(500).send('User 전체 조회 실패.');
-    res.status(200).send(users);
-  });
-});
-
 module.exports = app;

@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { List, Avatar, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 
-const Travel = ({ areaList, params, onMoveArea, onDelArea }) => {
+const Travel = ({ visible, areaList, params, onMoveArea, onDelArea }) => {
   if (!areaList) {
     areaList = {
       day_id: null,
@@ -31,46 +31,58 @@ const Travel = ({ areaList, params, onMoveArea, onDelArea }) => {
         style={{ marginTop: '20px' }}
         dataSource={areaList.area}
         footer={
-          <Link
-            to={`/${params.list}/${params.travel_id}/${
-              params.day_id
-            }/${nextId}`}
-          >
-            <div
-              style={{
-                width: '100%',
-                height: '60px',
-                background: '#DCACA8',
-                lineHeight: '60px',
-                paddingLeft: '20px',
-                border: '1px solid #DADBE6',
-                borderRadius: '10px'
-              }}
+          visible ? (
+            <Link
+              to={`/${params.list}/${params.travel_id}/${
+                params.day_id
+              }/${nextId}`}
             >
-              <Icon type="plus-circle" theme="twoTone" twoToneColor="#B8817D" />
-              <span
+              <div
                 style={{
-                  color: '#333333',
-                  marginLeft: '10px',
-                  fontWeight: 'bold'
+                  width: '100%',
+                  height: '60px',
+                  background: '#DCACA8',
+                  lineHeight: '60px',
+                  paddingLeft: '20px',
+                  border: '1px solid #DADBE6',
+                  borderRadius: '10px'
                 }}
               >
-                ADD{' '}
-              </span>
-            </div>
-          </Link>
+                <Icon
+                  type="plus-circle"
+                  theme="twoTone"
+                  twoToneColor="#B8817D"
+                />
+                <span
+                  style={{
+                    color: '#333333',
+                    marginLeft: '10px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  ADD
+                </span>
+              </div>
+            </Link>
+          ) : (
+            <div />
+          )
         }
         renderItem={item => (
           <List.Item
-            extra={[
-              <Icon
-                type="delete"
-                theme="twoTone"
-                twoToneColor="#B8817D"
-                onClick={() => onDelArea(item.area_id)}
-                style={{ fontSize: '20px' }}
-              />
-            ]}
+            extra={
+              visible ? (
+                <Icon
+                  type="delete"
+                  theme="twoTone"
+                  twoToneColor="#B8817D"
+                  onClick={() => onDelArea(item.area_id)}
+                  style={{ fontSize: '20px' }}
+                />
+              ) : (
+                <div />
+              )
+            }
             style={{
               background: '#EBD0CE',
               marginTop: '5px',
