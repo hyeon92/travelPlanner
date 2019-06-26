@@ -40,12 +40,12 @@ const Travel = ({ visible, areaList, params, onMoveArea, onDelArea }) => {
               <div
                 style={{
                   width: '100%',
-                  height: '60px',
+                  marginTop: '20px',
+                  marginBottom: '20px',
                   background: '#DCACA8',
                   lineHeight: '60px',
                   paddingLeft: '20px',
-                  border: '1px solid #DADBE6',
-                  borderRadius: '10px'
+                  boxShadow: '0.5px 0.5px 1px 0px #999'
                 }}
               >
                 <Icon
@@ -84,25 +84,18 @@ const Travel = ({ visible, areaList, params, onMoveArea, onDelArea }) => {
               )
             }
             style={{
-              background: '#EBD0CE',
-              marginTop: '5px',
-              paddingLeft: '10px',
-              paddingRight: '20px',
-              border: '1px solid #DADBE6',
-              borderRadius: '10px'
+              background: '#FFFFFF',
+              marginTop: '20px',
+              marginBottom: '20px',
+              padding: '20px',
+              boxShadow: '0.5px 0.5px 1px 0px #999'
             }}
           >
             <List.Item.Meta
               style={{
                 cursor: 'Pointer'
               }}
-              avatar={
-                <Avatar
-                  icon="check-square"
-                  theme="twoTone"
-                  style={{ background: '#B8817D' }}
-                />
-              }
+              avatar={<Avatar icon="check-square" />}
               title={item.place_name}
               description={item.memo}
               onClick={() => onMoveArea(item.area_id)}

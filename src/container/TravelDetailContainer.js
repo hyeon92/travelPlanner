@@ -8,6 +8,7 @@ import * as areaActions from 'store/module/area';
 import TravelDetail from 'page/TravelDetail';
 import TravelSide from 'page/side/TravelSide';
 import storage from 'lib/storage';
+import TravelDetail_other from '../page/TravelDetail_other';
 
 class TravelDetailContainer extends Component {
   constructor(props) {
@@ -23,7 +24,6 @@ class TravelDetailContainer extends Component {
   }
 
   componentDidMount() {
-    const { visible } = this;
     const { areaActions, travelActions } = this.props;
     const { travelList } = this.props;
     const {
@@ -39,7 +39,7 @@ class TravelDetailContainer extends Component {
 
     // 로그인 한 회원의 아이디와 일정을 작성한 회원의 아이디가 동일한 경우
     if (travelInfo.user_id === userInfo.user_id) {
-      visible = true;
+      this.visible = true;
     }
 
     info.user_id = travelInfo.user_id;
@@ -601,18 +601,21 @@ class TravelDetailContainer extends Component {
               <div />
             )}
           </div>
-          <TravelDetail
-            visible={visible}
-            areaInfo={areaInfo}
-            onEditTime={handleEditTime}
-            onEditTransport={handleEditTransport}
-            onEditMoveTime={handleEditMoveTime}
-            onEditTransportCost={handleEditTransportCost}
-            onEditCost={handleEditCost}
-            onEditStayTime={handleEditStayTime}
-            onEditMemo={handleEditMemo}
-            onSave={handleSave}
-          />
+          {visible ? (
+            <TravelDetail
+              areaInfo={areaInfo}
+              onEditTime={handleEditTime}
+              onEditTransport={handleEditTransport}
+              onEditMoveTime={handleEditMoveTime}
+              onEditTransportCost={handleEditTransportCost}
+              onEditCost={handleEditCost}
+              onEditStayTime={handleEditStayTime}
+              onEditMemo={handleEditMemo}
+              onSave={handleSave}
+            />
+          ) : (
+            <TravelDetail_other areaInfo={areaInfo} />
+          )}
         </div>
       </Fragment>
     );

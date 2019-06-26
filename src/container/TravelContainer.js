@@ -20,7 +20,6 @@ class TravelContainer extends Component {
   }
 
   componentDidMount() {
-    const { visible } = this;
     const { travelList } = this.props;
     const { dayActions, travelActions } = this.props;
     const {
@@ -36,7 +35,7 @@ class TravelContainer extends Component {
 
     // 로그인 한 회원의 아이디와 일정을 작성한 회원의 아이디가 동일한 경우
     if (travelInfo.user_id === userInfo.user_id) {
-      visible = true;
+      this.visible = true;
     }
 
     info.user_id = travelInfo.user_id;

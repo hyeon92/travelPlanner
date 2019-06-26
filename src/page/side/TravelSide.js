@@ -104,9 +104,9 @@ const TravelSide = ({
                   cursor: 'Pointer',
                   background: '#DADBE6',
                   height: '40px',
+                  margin: '5px',
                   lineHeight: '40px',
-                  paddingLeft: '5px',
-                  borderRadius: '5px'
+                  paddingLeft: '5px'
                 }}
               >
                 <Icon type="plus" />
@@ -120,9 +120,10 @@ const TravelSide = ({
             <List.Item
               style={{
                 background: '#F0F1F7',
-                borderRadius: '5px',
-                marginTop: '5px',
-                padding: '5px'
+                margin: '5px',
+                marginTop: '10px',
+                marginBottom: '10px',
+                padding: '10px'
               }}
               extra={
                 visible ? (
@@ -155,7 +156,13 @@ const TravelSide = ({
       {visible ? (
         <Button
           onClick={onSaveTravel}
-          style={{ width: '100%', background: '#9597A6' }}
+          style={{
+            width: '100%',
+            marginTop: '20px',
+            background: '#9597A6',
+            borderRadius: '0px',
+            height: '40px'
+          }}
         >
           저장
         </Button>
