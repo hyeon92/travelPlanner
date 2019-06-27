@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Layout, Icon, List, Avatar, DatePicker, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 import moment from 'moment';
@@ -169,6 +170,19 @@ const TravelSide = ({
       ) : (
         <div />
       )}
+      <Link to={`/MyList`}>
+        <Button
+          style={{
+            width: '100%',
+            marginTop: '20px',
+            background: '#F0F1F7',
+            borderRadius: '0px',
+            height: '40px'
+          }}
+        >
+          홈으로 가기
+        </Button>
+      </Link>
     </Layout.Sider>
   );
 };

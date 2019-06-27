@@ -87,6 +87,7 @@ const TravelDetail = ({
         value={moment(areaInfo.move_time)}
         onChange={onEditMoveTime}
         format={'HH:mm'}
+        allowClear={false}
       />
       <div
         style={{
@@ -134,6 +135,7 @@ const TravelDetail = ({
         value={moment(areaInfo.stay_time)}
         onChange={onEditStayTime}
         format={'HH:mm'}
+        allowClear={false}
       />
       <div
         style={{

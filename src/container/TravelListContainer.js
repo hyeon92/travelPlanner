@@ -52,9 +52,26 @@ class TravelListContainer extends Component {
     // 선택한 여행 계획일정으로 이동합니다.
     this.props.history.push(`/${list}/${e.travel_id}/1`);
   };
+
+  // 여행 계획 Add 버튼 클릭 시 유저 id를 저장 후 이동합니다.
+  handleNewMoveTravel = nextId => {
+    const {
+      match: {
+        params: { list }
+      }
+    } = this.props;
+
+    const userInfo = storage.get('userInfo');
+    storage.set('travelInfo', {
+      user_id: userInfo.user_id
+    });
+
+    // 세션에 여행 일정의 정보를 저장합니다.
+    this.props.history.push(`/${list}/${nextId}/1`);
+  };
   render() {
     const { user } = this.props;
-    const { handlegetTravelList, handleMoveTravel } = this;
+    const { handlegetTravelList, handleMoveTravel, handleNewMoveTravel } = this;
 
     const params = this.props.match.params;
 
@@ -73,6 +90,7 @@ class TravelListContainer extends Component {
             travelList={user}
             params={params}
             onMoveTravel={handleMoveTravel}
+            onNewMoveTravel={handleNewMoveTravel}
           />
         </div>
       </Fragment>

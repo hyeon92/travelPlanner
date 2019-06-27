@@ -1,9 +1,8 @@
 import React, { Fragment } from 'react';
 import { List, Card, Icon } from 'antd';
-import { Link } from 'react-router-dom';
 import moment from 'moment';
 
-const TravelList = ({ travelList, params, onMoveTravel }) => {
+const TravelList = ({ travelList, params, onMoveTravel, onNewMoveTravel }) => {
   // 새로운 여행 등록 시 id 지정
   let nextId;
 
@@ -19,28 +18,20 @@ const TravelList = ({ travelList, params, onMoveTravel }) => {
       dataSource={travelList.travel}
       footer={
         params.list === 'MyList' ? (
-          <Link to={`/MyList/${nextId}/1`}>
-            <Card>
-              <Icon type="plus" />
-              <span> ADD </span>
-            </Card>
-          </Link>
+          <Card onClick={() => onNewMoveTravel(nextId)}>
+            <Icon type="plus" />
+            <span> ADD </span>
+          </Card>
         ) : (
           <Fragment />
         )
       }
       renderItem={item => (
-        <List.Item>
+        <List.Item onClick={() => onMoveTravel(item)}>
           <Card
             hoverable
             style={{ width: 240 }}
-            cover={
-              <img
-                alt="example"
-                src="https://bit.ly/2IQyAci"
-                onClick={() => onMoveTravel(item)}
-              />
-            }
+            cover={<img alt="example" src="https://bit.ly/2IQyAci" />}
           >
             <Card.Meta
               title={item.title}

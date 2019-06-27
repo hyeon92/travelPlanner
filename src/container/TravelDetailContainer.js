@@ -6,9 +6,10 @@ import * as travelActions from 'store/module/travel';
 import * as dayActions from 'store/module/day';
 import * as areaActions from 'store/module/area';
 import TravelDetail from 'page/TravelDetail';
+import TravelDetail_other from 'page/TravelDetail_other';
 import TravelSide from 'page/side/TravelSide';
 import storage from 'lib/storage';
-import TravelDetail_other from '../page/TravelDetail_other';
+import moment from 'moment';
 
 class TravelDetailContainer extends Component {
   constructor(props) {
@@ -79,18 +80,21 @@ class TravelDetailContainer extends Component {
     if (aNEventNm === 'GET_AREA_INFO') {
       // 장소 정보를 가져온 후 성공여부에 따라 반응합니다.
       if (aBEventNm !== 'GET_AREA_INFO' && aStatus === 'SUCCESS') {
-        // 장소 정보에 있는 위치를 저장합니다.
-        const moveLocation = new daum.maps.LatLng(
-          areaInfo.location_y,
-          areaInfo.location_x
-        );
-
-        // 지도에서 저장한 위치로 이동합니다.
-        this.state.map.setLevel(5);
-        this.state.map.panTo(moveLocation);
-
-        // 저장한 위치에 마커와 말풍선을 추가합니다.
-        addMarker(moveLocation, 0);
+        if (
+          areaInfo.location_y !== undefined &&
+          areaInfo.location_x !== undefined
+        ) {
+          // 장소 정보에 있는 위치를 저장합니다.
+          const moveLocation = new daum.maps.LatLng(
+            areaInfo.location_y,
+            areaInfo.location_x
+          );
+          // 지도에서 저장한 위치로 이동합니다.
+          this.state.map.setLevel(5);
+          this.state.map.panTo(moveLocation);
+          // 저장한 위치에 마커와 말풍선을 추가합니다.
+          addMarker(moveLocation, 0);
+        }
       }
     } else if (aNEventNm === 'SAVE_AREA_INFO') {
       // 장소 정보를 저장 후 성공여부에 따라 반응합니다.

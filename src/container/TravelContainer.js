@@ -36,9 +36,11 @@ class TravelContainer extends Component {
     // 로그인 한 회원의 아이디와 일정을 작성한 회원의 아이디가 동일한 경우
     if (travelInfo.user_id === userInfo.user_id) {
       this.visible = true;
+    } else {
+      this.visible = false;
     }
 
-    info.user_id = travelInfo.user_id;
+    info.user_id = userInfo.user_id;
     info.travel_id = travel_id;
     info.day_id = day_id;
 
@@ -216,6 +218,7 @@ class TravelContainer extends Component {
         params: { list, travel_id, day_id }
       }
     } = this.props;
+
     this.props.history.push(`/${list}/${travel_id}/${day_id}/${e}`);
   };
 
@@ -243,6 +246,7 @@ class TravelContainer extends Component {
   render() {
     const { visible } = this;
     const { travelList, day } = this.props;
+
     const {
       handleEditTitle,
       handleEditsDate,

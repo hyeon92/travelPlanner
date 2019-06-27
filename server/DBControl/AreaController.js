@@ -3,6 +3,7 @@ const app = express();
 app.use(express.json());
 
 const User = require('./User');
+const moment = require('moment'); // 날짜
 
 // 1개의 여행일정의 모든 지역 조회
 app.get('/selectAll/:user_id/:travel_id/:day_id', function(req, res) {
@@ -69,12 +70,23 @@ app.get('/selectArea/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
       });
 
       if (area === undefined) {
-        area = { area_id: req.params.area_id };
+        area = {
+          area_id: req.params.area_id,
+          move_time: moment('00:00', 'HH:mm'),
+          stay_time: moment('00:00', 'HH:mm'),
+          cost: 0,
+          transport_cost: 0
+        };
       }
       res.status(200).send(area);
     } else {
-      const area = { area_id: req.params.area_id };
-
+      const area = {
+        area_id: req.params.area_id,
+        move_time: moment('00:00', 'HH:mm'),
+        stay_time: moment('00:00', 'HH:mm'),
+        cost: 0,
+        transport_cost: 0
+      };
       res.status(200).send(area);
     }
   });
@@ -168,7 +180,6 @@ app.put('/delete/:user_id/:travel_id/:day_id/:area_id', function(req, res) {
     const area_idx = user.travel[travel_idx].day[day_idx].area.indexOf(area);
 
     day.area.splice(area_idx, 1);
-    console.log('area', day);
 
     user.travel[travel_idx].day = day;
 
